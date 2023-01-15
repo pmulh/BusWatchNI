@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card border-0">
+  <div class="card-body">
+    <br>
+    
+    <h3 style="margin-bottom: -10px;">What is BusWatchNI?</h3>
+    <p>BusWatchNI is a dashboard designed to increase transparency into the punctuality and reliability of bus services in Northern Ireland (specifically Belfast Metro services initially), by making use of publicly available information from Translink's live departure data. Creation and upkeep of the site were possible thanks to funding from <a href="https://www.opendatani.gov.uk/">OpenDataNI</a> Innovation and Outreach Fund (2022). </p>
+
+    <br>
+    <h3 style="margin-bottom: -10px;">What data is BusWatchNI using?</h3>
+    <p>BusWatchNI regularly queries data from the "Next Service" search tool on the <a href="https://www.translink.co.uk/">Translink website </a> (using the GetJourneyResults API). This API returns data on upcoming departures from a given bus stop, including:
+      <ul>
+        <li>The Service Name (e.g. 1a, 12b, G1, etc);</li>
+        <li>The Destination Name (e.g. "Belfast, Howard Street");</li>
+        <li>Whether or not the departure has been cancelled;</li>
+        <li>The scheduled/planned departure time;</li>
+        <li>The current estimate of what the actual departure time will be.</li>
+      </ul>
+    Comparison of these last two pieces of information (the scheduled and estimated actual departure times) is central to the analysis presented throughout the BusWatchNI site.
+
+    The code used to collect this data is available on <a href="https://github.com/pmulh/BusWatchNI/tree/main/googleCloudFunctions">GitHub</a>.
+
+    This data is supplemented with some data from <a href="https://www.opendatani.gov.uk/">OpenDataNI</a> (specifically bus stop coordinates).</p>
+
+    <br>
+    <h3 style="margin-bottom: -10px;">What bus routes does BusWatchNI monitor?</h3>
+    <p>Currently only the services along the main Metro corridors in the Belfast area (i.e. buses on routes 1 through 12) plus the Belfast Glider routes (G1, G2). More routes may be added in the future.</p>
+
+    <br>
+    <h3 style="margin-bottom: -10px;">When/how frequently is data collected?</h3>
+    <p>In its current form, BusWatchNI has been collecting data on Metro departures since mid-August 2022, with the Glider routes being added shortly after (early September 2022).</p>
+    <p>Data collection scripts run every 2 minutes between the hours of 05:00 and 00:00 every day, checking the upcoming departures for a sample of stops along each tracked bus route. (Note that the 00:00 cutoff means that data on some of the late night "<a href="https://www.translink.co.uk/usingourservicesandproducts/ourservices/nightmovers">Nightmovers</a>" services that run on some routes around Christmas is not currently being collected).</p> 
+
+    <br>
+    <h3 style="margin-bottom: -10px;">How accurate is the data?</h3>
+    <p>Some limitations of the data and resulting metrics include:
+      <ul>
+        <li><strong>Translink data accuracy:</strong> The collected data (and any analysis based on this data, such as average departure delays) are only as good as the live estimated departure times provided by Translink; if Translink were to stop providing live estimates of departure times (i.e. if the "live departure estimates" were just set to be the scheduled departure times), BusWatchNI would assume that all departures were on time.</li>
+        <li><strong>No-shows:</strong> Similar to the point above, BusWatchNI is unable to capture "no-shows" (situations where the Translink live departure estimates indicate a bus will arrive at/depart from a given stop, either on time or with some delay, but where the estimated departure time comes and goes and the bus never shows up). In these cases the departure will be recorded in the BusWatchNI data with an actual departure time of whatever the last estimated departure time was before the departure disappeared off Translink's live departures pages.</li>
+        <li><strong>Stop sampling:</strong> Due to technical constraints, only a subset of stops are queried for each bus route, rather than all stops along that route. For each bus route (e.g. 2j), between 7 and 10 stops have been chosen, spread along the length of the route, in an effort to get a representative sample of stops for each route.</li>
+        <li><strong>Refresh frequency:</strong> Due to technical constraints, data is only pulled from the Translink live departure estimates for each stop every 2 minutes (approximately; this can vary slightly since the stops are queried in a random order each time, to avoid bias between stops, so the delay could be slightly more or slightly less than 2 minutes depending on when each stop is queried in two consecutive data pulls). This obviously sets a limit on how accurate the departure times recorded in the BusWatchNI data can be. However since the departure times in the data coming from Translink are only given to the "nearest" minute, a 2-minute refresh rate should give fairly accurate results.</li>
+      </ul>
+    Given the limitations listed above, it is likely that the estimates of departure delays calculated by BusWatchNI are, if anything, slightly underestimated; anecdotally at least, there seem to be cases where buses are delayed but the Translink live estimated departure times are identical to the scheduled departure times.
+    </p>
+
+    <br>
+    <h3 style="margin-bottom: -10px;">Does Translink not already produce performance metrics?</h3>
+    <p>Translink does produce some figures on the reliability/punctuality of its services (for example: <a href="https://www.translink.co.uk/corporate/monitoringresults">Monitoring Results</a>), but the details available are high-level and fairly limited.</p>
+
+    <p>In addition, as noted in a <a href='https://www.niauditoffice.gov.uk/publications/drd-effectiveness-public-transport-northern-ireland'>2015 report</a> by the Northern Ireland Audit Office (see paragraph 4.19): <i>"...buses are considered to arrive ‘on time’ even if they arrive up to 7 minutes late..."</i>, and <i>"...monitoring only compares starting point departure time and arrival times at final destination with scheduled times..."</i> (these points are supported by the <a href="https://www.translink.co.uk/corporate/publicationsanddocuments/corporatepublications">Translink Passenger Charter</a>).</p>
+
+    <p>The NIAO report goes on to make the recommendation that: <i>"The robustness of Translink’s measurement of punctuality and reliability targets should be improved. Translink should measure and report performance both inclusive and exclusive of delays outside its control and also measure and report timings on intermediate points on journeys rather than only starting and finishing points"</i> (Recommendation 4).</p>
+
+    <p>The purpose of BusWatchNI is to attempt to address some of these points, until Translink's public performance reporting is improved.</p>
+
+    <br>
+    <h3 style="margin-bottom: -10px;">Can I get a copy of the collected data for my own analysis?</h3>
+    <p>Yes! Monthly files of the collected data (after some filtering) are available for download from the <a href="{{ url_for('data') }}">Data</a> page.</p>
+
+    <br>
+    <h3 style="margin-bottom: -10px;">I have more questions/comments/suggestions - who do I contact?</h3>
+    <p>You can get in contact via either the  
+    <a href="https://twitter.com/BusWatchNI">BusWatchNI</a> Twitter account or by emailing buswatchni@gmail.com.</p>
+
+    <br>
+    <h3 style="margin-bottom: -10px;">Acknowledgements</h3>
+    <ul>
+      <li>Creation and upkeep of the site were possible thanks to funding from <a href="https://www.opendatani.gov.uk/">OpenDataNI</a> Innovation and Outreach Fund (2022).</li>
+      <li>The logo for BusWatchNI was created using <a href="https://openai.com/dall-e-2/">DALL·E 2</a>.</li>
+    </ul>
+
+
+  <div>
+</div>
+
+{% endblock %}
+
+
+
+{% block jscontent %}
+
+
+{% endblock %}

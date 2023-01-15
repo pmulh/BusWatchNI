@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Static files updated each day
+flaskApp/app/static/*.html
+

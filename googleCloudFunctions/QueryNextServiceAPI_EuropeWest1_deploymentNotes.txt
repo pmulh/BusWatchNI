@@ -1,0 +1,12 @@
+Google Function Name: QueryNextServiceAPI_EuropeWest1
+Last deployment date: 12 January 2023 at 08:59:01 GMT+0
+Region: europe-west1
+Memory allocated: 256 MB
+Timeout: 120 second
+Trigger: PubSub topic
+
+Schedule: 5 scheduled jobs to push the relevant PubSub topic with different lines attributes:
+1_2, 6_7, 10_12: 0-59/2 5-23 * * * (Europe/London)
+3_4_5, 8_9: 1-59/2 5-23 * * * (Europe/London)
+
+Other notes: Note that this function replaced QueryNextServiceAPI which was hosted in us-central1; the changeover happened on 21st May 2022.

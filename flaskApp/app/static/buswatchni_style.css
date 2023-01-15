@@ -1,0 +1,198 @@
+:root {
+  --navbar-colour: lightsteelblue; /*bisque, floralwhite, #df633a;*/
+  --footer-sidebar-colour: #7a527a; /*#58210e;*/
+  --sidebar-text-colour: floralwhite;
+  --main-link-hover-colour: plum;
+  --data-panel-a-colour: #f5eff5; /*floralwhite;*/
+  --data-panel-b-colour: #edf2f7;  /*#ecdfec; */ /*#e6fee6*/  /*#edf2f7*/
+  --data-panel-c-colour: #e6fee6;
+}
+
+body {
+  position: relative;
+  min-height: 100%;
+  min-height: 100vh;
+}
+
+footer {
+    width: 100%;
+    font-size: 1.0em;
+    margin-top: 10px;
+    padding: 8px 8px;
+    position: absolute;
+    right: 0;
+    left: 0;
+    vertical-align: middle;
+}
+
+
+@media (max-width: 374px) {
+    .logo {
+        display: none;
+    }
+    .altair_card {
+        width: 80%;
+    }
+}
+
+@media (max-width: 649px) {
+    .footer_container_large {
+        display: none;
+    }
+}
+
+@media (min-width: 650px) {
+    .footer_container_small {
+        display:  none;
+    }
+}
+
+@media (max-width:  1023px) {
+    .navlink_logo {
+    padding-left: 16px;
+    }
+}
+
+@media (min-width: 375px) {
+    .card-columns {
+        column-count: 1;
+    }
+    .altair_card {
+        width: 85%;
+    }
+    .logo {
+        padding-left: 0px;
+        padding-top: 0px;
+        padding-bottom: 2px;
+    }
+    .navbar_logo {
+        padding-left: 0px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+}
+
+@media (max-width: 424px) {
+    .perc_delay_card_normal {
+        display: none;
+    }
+}
+
+
+@media (min-width: 425px) {
+    .card-columns {
+        column-count: 1;
+    }
+    .altair_card {
+        width: 85%;
+    }
+    .perc_delay_card_small {
+        display: none;
+    }
+}
+
+
+@media (min-width: 768px) {
+    .card-columns {
+        column-count: 1;
+    }
+    .altair_card {
+        width: 95%;
+    }
+}
+
+@media (min-width: 992px) {
+    .card-columns {
+        column-count: 2;
+    }
+    .altair_card {
+        width: 90%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .card-columns {
+        column-count: 2;
+    }
+    .altair_card {
+        width: 95%;
+    }
+}
+
+
+/* Resizing of '1 Week', '2 Weeks' etc nav links based on screen size to try to fit on one line */
+/* Below 424px, just accept we'll need two rows */
+/*@media (max-width: 350px) {*/
+@media (max-width: 423px) {
+    .weeks_tabs {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .nav-pills .nav-link {
+        display: inline;
+        color: #697a8b;
+        padding-top:  0.3rem;
+        padding-bottom: 0.3rem;
+        margin-left:auto;
+        margin-right:auto;         
+        border-radius: 0.75rem;
+        margin-left:auto;
+        margin-right:auto;         
+    }
+}
+
+
+@media (min-width: 424px) and (max-width: 469px) {
+    .nav-pills .nav-link {
+        display: inline;
+        color: #697a8b;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        padding-top: 0.7rem;
+        /*padding-bottom: 0.3rem;        */
+        border-top-left-radius: 0.75rem;
+        border-top-right-radius: 0.75rem;
+    }
+}
+
+@media (min-width: 470px) {
+    .nav-pills .nav-link {
+        display: inline;
+        color: #697a8b;
+        padding-top: 0.7rem;        
+        /*padding-bottom: 0.3rem;          */
+        border-top-left-radius: 0.75rem;
+        border-top-right-radius: 0.75rem;
+    }
+}
+
+.nav-link {
+    font-weight: bold;
+}
+
+.nav-pills .nav-link.active {
+    color: #fff;
+    background-color: #dc3545;
+}
+
+.homepage-cards {
+    border-width: 2px;
+}
+
+.card-no-padding {
+    padding: 0;
+}
+
+.card-no-left-padding {
+    padding-left: 0;
+}
+
+.card-no-side-padding {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.summary_bullets {
+    margin-top: -15px;
+    padding-left: 20px;
+}

@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card border-0">
+  <div class="card-body">
+    <br>
+    <p>The data used to create the plots throughout BusWatchNI can be downloaded below: the first section contains monthly files for the data collected from Translink, while some smaller supplementary datasets are provided in the section section.</p>
+
+    <h2><strong>Departures Data</strong></h2>
+      <p>Each month of data is presented here as a separate compressed csv file (bzip2 compression). An example of the structure of the data is given below the download links, along with an overview of the data collection and aggregation process.</p>
+
+      <h5>2022</h5>
+        <ul>
+          <li><a href='/download_compressed/2022_12'> December</a> ({{ MonthlyDownloadFileSizes['2022_12']['.csv.bz2'] }})</li>
+          <li><a href='/download_compressed/2022_11'> November</a> ({{ MonthlyDownloadFileSizes['2022_11']['.csv.bz2'] }})</li>
+          <li><a href='/download_compressed/2022_10'> October</a> ({{ MonthlyDownloadFileSizes['2022_10']['.csv.bz2'] }})</li>
+          <li><a href='/download_compressed/2022_09'> September</a> ({{ MonthlyDownloadFileSizes['2022_09']['.csv.bz2'] }})</li>
+          <li><a href='/download_compressed/2022_08'> August</a> ({{ MonthlyDownloadFileSizes['2022_08']['.csv.bz2'] }})</li>
+        </ul>
+
+      <br>
+      <h4>Example Data</h4>
+      <p>Two example rows from these files are shown below:</p>
+      <table id='monthlyDataExampleTable' class="table display" style="white-space: nowrap;">
+        <thead>
+          <tr>
+            <th style="text-align: center;">QueryDateUnix</th>
+            <th style="text-align: center;">OriginId</th>
+            <th style="text-align: center;">ServiceName</th>
+            <th style="text-align: center;">DestinationName</th>
+            <th style="text-align: center; padding-right: 5px;">PlannedDepartureDate</th>
+            <th style="text-align: center; padding-right: 5px;">PlannedDepartureTime</th>
+            <th style="text-align: center; padding-right: 5px;">ActualDepartureDate</th>
+            <th style="text-align: center; padding-right: 5px;">ActualDepartureTime</th>
+            <th style="text-align: center;">IsCancelled</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align: center;">1661154132</td>
+            <td style="text-align: center;">10005361</td>
+            <td style="text-align: center;">Bus 2k</td>
+            <td style="text-align: center;">Downview, Waterloo Gardens</td>
+            <td style="text-align: center;">22/08/2022</td>
+            <td style="text-align: center;">08:41</td>
+            <td style="text-align: center;">22/08/2022</td>
+            <td style="text-align: center;">08:44</td>
+            <td style="text-align: center;">NaN</td>
+          </tr>
+          <tr>
+            <td style="text-align: center;">1672527853</td>
+            <td style="text-align: center;">10010150</td>
+            <td style="text-align: center;">Bus 7b</td>
+            <td style="text-align: center;">Belfast, Howard Street</td>
+            <td style="text-align: center;">31/12/2022</td>
+            <td style="text-align: center;">23:05</td>
+            <td style="text-align: center;">31/12/2022</td>
+            <td style="text-align: center;">23:08</td>
+            <td style="text-align: center;">False</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br>
+      <p>All columns come directly from the response of the https://www.translink.co.uk/JourneyPlannerApi/GetJourneyResults API, with the exception of OriginId, which is supplied as an input to the API rather than received as an output, and QueryDateUnix, which is the date and time at which the API was queried (given as a Unix timestamp) for that OriginId. The final column, IsCancelled, wasn't available when the data collection scripts were initially created, and has only been collected from 12/12/2022; this column will contain a NaN value for dates before this.</p>
+
+      <br>
+      <h4>Data Collection Details</h4>
+      <p>
+        The points below provide a high-level overview of the data collection process and the aggregation/filtering applied to produce the monthly files provided above. For more information, see the actual data collection scripts on <a href="https://github.com/pmulh/BusWatchNI/tree/main/googleCloudFunctions">GitHub</a>.
+        <ol>
+          <li>For each bus route being monitored ("ServiceName" in the example data above), 7-10 stops ("OriginId" above) were selected along the length of the route.</li>
+          <li>The API https://www.translink.co.uk/JourneyPlannerApi/GetJourneyResults is queried for each stop ("OriginId") selected along each route ("ServiceName") approximately every 2 minutes between 05:00 and 00:00, with the resulting data saved out as csvs.</li>
+          <li>At 03:00, the many csv files created the day before are combined together into a single file for that day. Some filtering is done at this stage: 1) The API returns a list of all upcoming departures from the specified OriginId, which may include routes not currently being tracked by BusWatchNI; data on these routes are discarded; 2) Data on departures for the following day are also discarded (generally speaking there are no Metro departures after midnight).</li>
+          <li>Since each stop is queried every 2 minutes, each departure will appear multiple times in the resulting data. Since the most recent entry (i.e. the row with the largest value of QueryDateUnix) should be the most accurate measure of the actual departure time, the data for each departure is sorted by QueryDateUnix (in descending order), and then filtered to only keep the first row to be used as the "actual" departure time.</li>
+          <li>At 04:00, the aggregated data from the day before is appended to the existing data from previous days. An additional bit of filtering is done at this stage before this data is used to create the plots shown in BusWatchNI: since a bus route stops at more stops than just those selected for that route in step 1, the collected data may have rows for departures from more than the 7-10 OriginIds specifically selected for that route. To enable easier comparison between routes, at this point the data is filtered to only keep departures from the 7-10 OriginIds selected for each ServiceName.</li>
+          <li>At this point the data consists of a single row for each combination of OriginId, ServiceName, DestinationName, PlannedDepartureDate and PlannedDepartureTime; this dataset is then used to create the monthly files above and the plots shown on BusWatchNI.</li>
+        </ol>
+      </p>
+
+    <br>
+    <h2><strong>Supplementary Data</strong></h2>
+    <h4>Stop Names and Coordinates</h4>
+    <p><a href='/download/StopDetails.csv'>StopDetails.csv</a> - This file contains the name, OriginId, and coordinates of each stop, and was created by combining several datasets from <a href='https://www.opendatani.gov.uk/'>OpenDataNI</a>. Due to some OriginIds having multiple coordinates listed, the average latitude and longitude has been taken for each stop.</p>
+
+    <p>Two example rows from this dataset are shown below:</p>
+    <table id='stopCoordsDataExampleTable' class="table display" style="max-width: 800px;">
+      <thead>
+        <tr>
+          <th style="text-align: center;">OriginId</th>
+          <th style="text-align: center; padding-right: 5px;">Latitude_mean</th>
+          <th style="text-align: center; padding-right: 5px;">Longitude_mean</th>
+          <th style="text-align: center;">Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align: center;">10006243</td>
+          <td style="text-align: center;">54.590562</td>
+          <td style="text-align: center;">-5.958052</td>
+          <td style="text-align: center;">Falls, Royal Hospital Stores</td>
+        </tr>
+        <tr>
+          <td style="text-align: center;">10011526</td>
+          <td style="text-align: center;">54.599970</td>
+          <td style="text-align: center;">-5.872911</td>
+          <td style="text-align: center;">Strandtown, Edenville Crescent</td>
+        </tr>
+      </tbody>
+    </table>
+
+
+    <!--<h3 style="margin-bottom: -10px;">Service Updates Data</h3>-->
+  
+  <div>
+</div>
+
+{% endblock %}
+
+
+
+
+{% block jscontent %}
+<script>
+  var monthlyDataExampleTable = $('#monthlyDataExampleTable').DataTable({
+    "paging": false,
+    "searching": false,
+    "bInfo" : false,
+    "ordering": false,
+    "scrollX": false,
+  });
+</script>
+
+<script>
+  var stopCoordsDataExampleTable = $('#stopCoordsDataExampleTable').DataTable({
+    "paging": false,
+    "searching": false,
+    "bInfo" : false,
+    "ordering": false,
+    "scrollX": false,
+  });
+</script>
+
+
+{% endblock %}

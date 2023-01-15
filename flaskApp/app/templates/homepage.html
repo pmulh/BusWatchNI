@@ -1,0 +1,1101 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card border-0 justify-content-md-center mx-auto" style="width: 98%;">
+  <div class="card-header border-danger sticky-top" style="background-color: #ffffff; border-width: 6px;">
+    <ul class="nav nav-pills card-header-tabs" id="date_range_tabs" role="tablist">
+      <li class="nav-item weeks_tabs">
+        <a class="nav-link" href="#one_week" id="one_week_tab" role="tab" aria-controls="one_week" aria-selected="false">1 Week</a>
+      </li>
+      <li class="nav-item weeks_tabs">
+        <a class="nav-link" href="#two_weeks" id="two_weeks_tab",role="tab" aria-controls="two_weeks" aria-selected="false">2 Weeks</a>
+      </li>
+      <li class="nav-item weeks_tabs">
+        <a class="nav-link active" href="#four_weeks" id="four_weeks_tab" role="tab" aria-controls="four_weeks" aria-selected="true">4 Weeks</a>
+      </li>
+      <li class="nav-item weeks_tabs">
+        <a class="nav-link" href="#twelve_weeks" id="twelve_weeks_tab" role="tab" aria-controls="twelve_weeks" aria-selected="false">12 Weeks</a>
+      </li>
+      <li class="nav-item weeks_tabs">
+        <a class="nav-link" href="#since_records_began" id="since_records_began_tab" role="tab" aria-controls="since_records_began" aria-selected="false">All</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card-body">
+    <div class="tab-content mt-3">
+
+      <!-- ---------------------- -->
+      <!--      ONE WEEK TAB      -->
+      <!-- ---------------------- -->
+
+      <div class="tab-pane" id="one_week" role="tabpanel">
+
+        <div class="card border-danger homepage-cards">
+          <div class="card card-body border-0" style="text-align: center;">
+            <p>Since {{ HighLevelSummary.loc['OneWeek', 'MinDeptDate'] }}, data has been collected on <strong>{{ HighLevelSummary.loc['OneWeek', 'Count'] }} bus departures</strong> (of which ~{{ HighLevelSummary.loc['OneWeek', 'CancellationPerc'] }}% were cancelled), from <strong>{{ HighLevelSummary.loc['OneWeek', 'OriginIdNunique'] }} stops</strong>, across <strong>{{ HighLevelSummary.loc['OneWeek', 'ServiceNameNunique'] }} different routes</strong>.</p>
+
+            <p>Across all these departures, the <strong>average delay </strong>between the planned and actual departure times was <strong>{{ HighLevelSummary.loc['OneWeek', 'MeanDelay'] }} minutes</strong>, while <strong>{{ HighLevelSummary.loc['OneWeek', 'PercLt5Mins'] }}% </strong>of departures had a delay of <strong>5 minutes or less</strong>.</p>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="card-columns">
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#LinesSummaryCollapseOneWeek" aria-expanded="true" aria-controls="LinesSummaryCollapseOneWeek">
+                <span class="fa fa-angle-down"></span> Summary by Route
+              </h4>
+              <div class="collapse show" id="LinesSummaryCollapseOneWeek">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>High-level comparison of different routes (grouped by Metro corridors).
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>"Delay" = difference between actual and scheduled departure times.</li>
+                        <li>Each "Line" contains multiple bus routes (e.g. 2a, 2b, etc).</li>
+                        <li>Cancelled departures are included in the "Departures Recorded" number, but excluded when "Average Delay" and "% within 5 mins" are calculated.</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="card-no-padding card-body border-0">
+                  <table id="summaryTableOneWeek" class="table display dataTables_wrapper" pageLength="12">
+                    <thead>
+                      <tr>
+                        <th class="first_col">Line</th>
+                        <th>Route</th>
+                        <th>Average Delay (mins)</th>
+                        <th>Departures within 5 mins of Schedule</th>
+                        <th>Departures Recorded</th>
+                        <th>Cancellations</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for _, row in summary_table.iterrows() %}
+                      <tr>
+                        <td class="first_col" style="background-color: {{ row['colour'] }}"><strong>
+                          <a style="color: white" href='{{ url_for("homepage") }}'>{{ row['Line'] }}</a></strong></td>
+                        <td style="white-space: nowrap;"><a style="color: black" href='{{ url_for("homepage") }}'>{{ row['descriptive_name'] }}</a></td></td>
+
+                        <td style="text-align: center">{{ row['Mean_OneWeek'] }}</td>
+                        <td style="text-align: center">{{ row['Perc_lte5MinDelay_OneWeek'] }} &#37;</td>
+                        <td style="text-align: center">{{ row['Count_OneWeek'] }}</td>
+                        <td style="text-align:  center">{{ row['cancellation_percentage_OneWeek'] }} &#37;</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#AvgDeptDelayCollapseOneWeek" aria-expanded="true" aria-controls="AvgDeptDelayCollapseOneWeek">
+                <span class="fa fa-angle-down"></span> Average Delay by Date
+              </h4>
+              <div class="collapse show" id="AvgDeptDelayCollapseOneWeek">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Average departure delay per day, across all tracked routes and stops.
+                  <i>
+                    <ul class="summary_bullets">
+                      <li>Points show the average delay for each date; the red line shows a 7-day rolling average (the average delay of all departures on that day and the 6 preceding days).</li>
+                    </ul>
+                  </i>
+                </div>
+
+                <div class="justify-content-md-center altair_card">
+                  <div id="plot_MeanByDate_OneWeek" style="width: 95%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#FoliumMapCollapseOneWeek" aria-expanded="true" aria-controls="FoliumMapCollapseOneWeek">
+                <span class="fa fa-angle-down"></span> Stop-by-Stop Comparison
+              </h4>
+              <div class="collapse show" id="FoliumMapCollapseOneWeek">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Map of bus stops monitored by BusWatchNI.
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>Colour indicates average departure delay from each stop<br>(orange: departures typically on schedule; blue: departures often delayed).</li>
+                        <li>Hover over/tap a stop to show more information about it.</li>
+                        <li>Alternative versions: <a href='/static/foliumMap_AllLines_OneWeek.html'>fullscreen</a>, <a href='/static/foliumMap_AllLines_OneWeek_altColour.html'>red-green colour scale</a>, <a href='/static/foliumMap_AllLines_OneWeek_watercolour.html'>watercolour style</a>.</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="card border-0">
+                  <iframe src="/static/foliumMap_AllLines_OneWeek.html" title="test" style="width: 100%; border: none" height="450"></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#PercDelayCollapseOneWeek" aria-expanded="true" aria-controls="PercDelayCollapseOneWeek">
+                <span class="fa fa-angle-down"></span> Percentage of "On-Time" Departures
+              </h4>
+              <div class="collapse show" id="PercDelayCollapseOneWeek">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Percentage of departures within 3, 7, or 15 minutes of scheduled departure times, across all tracked routes and stops.
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>Points show the percentage of departures within 3, 7 or 15 minutes of schedule for each date.</li>
+                        <li>Lines show similar percentages but calculated over the previous week (each date plus the 6 preceding days).</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="justify-content-md-center altair_card perc_delay_card_normal">
+                  <div id="plot_PercDelayByDate_OneWeek" style="width: 90%;"></div>
+                </div>
+                <div class="justify-content-md-center altair_card perc_delay_card_small">
+                  <div id="plot_PercDelayByDate_OneWeek_smallScreen" style="width: 90%;"></div>
+                </div>                
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#AvgDeptDelayByTimeOfDayCollapseOneWeek" aria-expanded="true" aria-controls="AvgDeptDelayByTimeOfDayCollapseOneWeek">
+                <span class="fa fa-angle-down"></span> Average Delay by Time of Day
+              </h4>
+              <div class="collapse show" id="AvgDeptDelayByTimeOfDayCollapseOneWeek">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Average departure delay by time of day, across all tracked routes and stops.
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>Departures are grouped into 30 minute buckets (e.g. 09:00-09:29, 09:30-09:59, etc).</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="card border-0">
+                  <div id="plot_MeanByTimeOfDay_OneWeek" style="width: 100%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- End of card columns -->
+
+      </div>
+
+      <!-- ---------------------- -->
+      <!--  END OF ONE WEEK TAB   -->
+      <!-- ---------------------- -->
+
+      <!-- ---------------------- -->
+      <!--     TWO WEEKS TAB      -->
+      <!-- ---------------------- -->
+
+      <div class="tab-pane" id="two_weeks" role="tabpanel">
+
+        <div class="card border-danger homepage-cards">
+          <div class="card card-body border-0" style="text-align: center;">
+            <p>Since {{ HighLevelSummary.loc['TwoWeeks', 'MinDeptDate'] }}, data has been collected on <strong>{{ HighLevelSummary.loc['TwoWeeks', 'Count'] }} bus departures</strong> (of which ~{{ HighLevelSummary.loc['TwoWeeks', 'CancellationPerc'] }}% were cancelled), from <strong>{{ HighLevelSummary.loc['TwoWeeks', 'OriginIdNunique'] }} stops</strong>, across <strong>{{ HighLevelSummary.loc['TwoWeeks', 'ServiceNameNunique'] }} different routes</strong>.</p>
+
+            <p>Across all these departures, the <strong>average delay </strong>between the planned and actual departure times was <strong>{{ HighLevelSummary.loc['TwoWeeks', 'MeanDelay'] }} minutes</strong>, while <strong>{{ HighLevelSummary.loc['TwoWeeks', 'PercLt5Mins'] }}% </strong>of departures had a delay of <strong>5 minutes or less</strong>.</p>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="card-columns">
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#LinesSummaryCollapseTwoWeeks" aria-expanded="true" aria-controls="LinesSummaryCollapseTwoWeeks">
+                <span class="fa fa-angle-down"></span> Summary by Route
+              </h4>
+              <div class="collapse show" id="LinesSummaryCollapseTwoWeeks">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>High-level comparison of different routes (grouped by Metro corridors).
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>"Delay" = difference between actual and scheduled departure times.</li>
+                        <li>Each "Line" contains multiple bus routes (e.g. 2a, 2b, etc).</li>
+                        <li>Cancelled departures are included in the "Departures Recorded" number, but excluded when "Average Delay" and "% within 5 mins" are calculated.</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="card-no-padding card-body border-0">
+                  <table id="summaryTableTwoWeeks" class="table display dataTables_wrapper" pageLength="12">
+                    <thead>
+                      <tr>
+                        <th class="first_col">Line</th>
+                        <th>Route</th>
+                        <th>Average Delay (mins)</th>
+                        <th>Departures within 5 mins of Schedule</th>
+                        <th>Departures Recorded</th>
+                        <th>Cancellations</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for _, row in summary_table.iterrows() %}
+                      <tr>
+                        <td class="first_col" style="background-color: {{ row['colour'] }}"><strong>
+                          <a style="color: white" href='{{ url_for("homepage") }}'>{{ row['Line'] }}</a></strong></td>
+                        <td style="white-space: nowrap;"><a style="color: black" href='{{ url_for("homepage") }}'>{{ row['descriptive_name'] }}</a></td></td>
+
+                        <td style="text-align: center">{{ row['Mean_TwoWeeks'] }}</td>
+                        <td style="text-align: center">{{ row['Perc_lte5MinDelay_TwoWeeks'] }} &#37;</td>
+                        <td style="text-align: center">{{ row['Count_TwoWeeks'] }}</td>
+                        <td style="text-align:  center">{{ row['cancellation_percentage_TwoWeeks'] }} &#37;</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#AvgDeptDelayCollapseTwoWeeks" aria-expanded="true" aria-controls="AvgDeptDelayCollapseTwoWeeks">
+                <span class="fa fa-angle-down"></span> Average Delay by Date
+              </h4>
+              <div class="collapse show" id="AvgDeptDelayCollapseTwoWeeks">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Average departure delay per day, across all tracked routes and stops.
+                  <i>
+                    <ul class="summary_bullets">
+                      <li>Points show the average delay for each date; the red line shows a 7-day rolling average (the average delay of all departures on that day and the 6 preceding days).</li>
+                    </ul>
+                  </i>
+                </div>
+
+                <div class="justify-content-md-center altair_card">
+                  <div id="plot_MeanByDate_TwoWeeks" style="width: 95%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#FoliumMapCollapseTwoWeeks" aria-expanded="true" aria-controls="FoliumMapCollapseTwoWeeks">
+                <span class="fa fa-angle-down"></span> Stop-by-Stop Comparison
+              </h4>
+              <div class="collapse show" id="FoliumMapCollapseTwoWeeks">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Map of bus stops monitored by BusWatchNI.
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>Colour indicates average departure delay from each stop<br>(orange: departures typically on schedule; blue: departures often delayed).</li>
+                        <li>Hover over/tap a stop to show more information about it.</li>
+                        <li>Alternative versions: <a href='/static/foliumMap_AllLines_TwoWeeks.html'>fullscreen</a>, <a href='/static/foliumMap_AllLines_TwoWeeks_altColour.html'>red-green colour scale</a>, <a href='/static/foliumMap_AllLines_TwoWeeks_watercolour.html'>watercolour style</a>.</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="card border-0">
+                  <iframe src="/static/foliumMap_AllLines_TwoWeeks.html" title="test" style="width: 100%; border: none" height="450"></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#PercDelayCollapseTwoWeeks" aria-expanded="true" aria-controls="PercDelayCollapseTwoWeeks">
+                <span class="fa fa-angle-down"></span> Percentage of "On-Time" Departures
+              </h4>
+              <div class="collapse show" id="PercDelayCollapseTwoWeeks">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Percentage of departures within 3, 7, or 15 minutes of scheduled departure times, across all tracked routes and stops.
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>Points show the percentage of departures within 3, 7 or 15 minutes of schedule for each date.</li>
+                        <li>Lines show similar percentages but calculated over the previous week (each date plus the 6 preceding days).</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="justify-content-md-center altair_card perc_delay_card_normal">
+                  <div id="plot_PercDelayByDate_TwoWeeks" style="width: 90%;"></div>
+                </div>
+                <div class="justify-content-md-center altair_card perc_delay_card_small">
+                  <div id="plot_PercDelayByDate_TwoWeeks_smallScreen" style="width: 90%;"></div>
+                </div>                  
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#AvgDeptDelayByTimeOfDayCollapseTwoWeeks" aria-expanded="true" aria-controls="AvgDeptDelayByTimeOfDayCollapseTwoWeeks">
+                <span class="fa fa-angle-down"></span> Average Delay by Time of Day
+              </h4>
+              <div class="collapse show" id="AvgDeptDelayByTimeOfDayCollapseTwoWeeks">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Average departure delay by time of day, across all tracked routes and stops.
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>Departures are grouped into 30 minute buckets (e.g. 09:00-09:29, 09:30-09:59, etc).</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="card border-0">
+                  <div id="plot_MeanByTimeOfDay_TwoWeeks" style="width: 100%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- End of card columns -->
+
+      </div>
+
+      <!-- ---------------------- -->
+      <!--  END OF TWO WEEKS TAB  -->
+      <!-- ---------------------- -->
+
+      <!-- ---------------------- -->
+      <!--    FOUR WEEKS TAB      -->
+      <!-- ---------------------- -->
+
+      <div class="tab-pane active" id="four_weeks" role="tabpanel">
+
+        <div class="card border-danger homepage-cards">
+          <div class="card card-body border-0" style="text-align: center;">
+            <p>Since {{ HighLevelSummary.loc['FourWeeks', 'MinDeptDate'] }}, data has been collected on <strong>{{ HighLevelSummary.loc['FourWeeks', 'Count'] }} bus departures</strong> (of which ~{{ HighLevelSummary.loc['FourWeeks', 'CancellationPerc'] }}% were cancelled), from <strong>{{ HighLevelSummary.loc['FourWeeks', 'OriginIdNunique'] }} stops</strong>, across <strong>{{ HighLevelSummary.loc['FourWeeks', 'ServiceNameNunique'] }} different routes</strong>.</p>
+
+            <p>Across all these departures, the <strong>average delay </strong>between the planned and actual departure times was <strong>{{ HighLevelSummary.loc['FourWeeks', 'MeanDelay'] }} minutes</strong>, while <strong>{{ HighLevelSummary.loc['FourWeeks', 'PercLt5Mins'] }}% </strong>of departures had a delay of <strong>5 minutes or less</strong>.</p>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="card-columns">
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#LinesSummaryCollapseFourWeeks" aria-expanded="true" aria-controls="LinesSummaryCollapseFourWeeks">
+                <span class="fa fa-angle-down"></span> Summary by Route
+              </h4>
+              <div class="collapse show" id="LinesSummaryCollapseFourWeeks">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>High-level comparison of different routes (grouped by Metro corridors).
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>"Delay" = difference between actual and scheduled departure times.</li>
+                        <li>Each "Line" contains multiple bus routes (e.g. 2a, 2b, etc).</li>
+                        <li>Cancelled departures are included in the "Departures Recorded" number, but excluded when "Average Delay" and "% within 5 mins" are calculated.</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="card-no-padding card-body border-0">
+                  <table id="summaryTableFourWeeks" class="table display dataTables_wrapper" pageLength="12">
+                    <thead>
+                      <tr>
+                        <th class="first_col">Line</th>
+                        <th>Route</th>
+                        <th>Average Delay (mins)</th>
+                        <th>Departures within 5 mins of Schedule</th>
+                        <th>Departures Recorded</th>
+                        <th>Cancellations</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for _, row in summary_table.iterrows() %}
+                      <tr>
+                        <td class="first_col" style="background-color: {{ row['colour'] }}"><strong>
+                          <a style="color: white" href='{{ url_for("homepage") }}'>{{ row['Line'] }}</a></strong></td>
+                        <td style="white-space: nowrap;"><a style="color: black" href='{{ url_for("homepage") }}'>{{ row['descriptive_name'] }}</a></td></td>
+
+                        <td style="text-align: center">{{ row['Mean_FourWeeks'] }}</td>
+                        <td style="text-align: center">{{ row['Perc_lte5MinDelay_FourWeeks'] }} &#37;</td>
+                        <td style="text-align: center">{{ row['Count_FourWeeks'] }}</td>
+                        <td style="text-align:  center">{{ row['cancellation_percentage_FourWeeks'] }} &#37;</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#AvgDeptDelayCollapseFourWeeks" aria-expanded="true" aria-controls="AvgDeptDelayCollapseFourWeeks">
+                <span class="fa fa-angle-down"></span> Average Delay by Date
+              </h4>
+              <div class="collapse show" id="AvgDeptDelayCollapseFourWeeks">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Average departure delay per day, across all tracked routes and stops.
+                  <i>
+                    <ul class="summary_bullets">
+                      <li>Points show the average delay for each date; the red line shows a 7-day rolling average (the average delay of all departures on that day and the 6 preceding days).</li>
+                    </ul>
+                  </i>
+                </div>
+
+                <div class="justify-content-md-center altair_card">
+                  <div id="plot_MeanByDate_FourWeeks" style="width: 95%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#FoliumMapCollapseFourWeeks" aria-expanded="true" aria-controls="FoliumMapCollapseFourWeeks">
+                <span class="fa fa-angle-down"></span> Stop-by-Stop Comparison
+              </h4>
+              <div class="collapse show" id="FoliumMapCollapseFourWeeks">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Map of bus stops monitored by BusWatchNI.
+                  <i>
+                  <ul class="summary_bullets">
+                    <li>Colour indicates average departure delay from each stop<br>(orange: departures typically on schedule; blue: departures often delayed).</li>
+                    <li>Hover over/tap a stop to show more information about it.</li>
+                    <li>Alternative versions: <a href='/static/foliumMap_AllLines_FourWeeks.html'>fullscreen</a>, <a href='/static/foliumMap_AllLines_FourWeeks_altColour.html'>red-green colour scale</a>, <a href='/static/foliumMap_AllLines_FourWeeks_watercolour.html'>watercolour style</a>.</li>
+                  </ul></i>
+                </p>
+                </div>
+
+                <div class="card border-0">
+                  <iframe src="/static/foliumMap_AllLines_FourWeeks.html" title="test" style="width: 100%; border: none" height="450"></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#PercDelayCollapseFourWeeks" aria-expanded="true" aria-controls="PercDelayCollapseFourWeeks">
+                <span class="fa fa-angle-down"></span> Percentage of "On-Time" Departures
+              </h4>
+              <div class="collapse show" id="PercDelayCollapseFourWeeks">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Percentage of departures within 3, 7, or 15 minutes of scheduled departure times, across all tracked routes and stops.
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>Points show the percentage of departures within 3, 7 or 15 minutes of schedule for each date.</li>
+                        <li>Lines show similar percentages but calculated over the previous week (each date plus the 6 preceding days).</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="justify-content-md-center altair_card perc_delay_card_normal">
+                  <div id="plot_PercDelayByDate_FourWeeks" style="width: 90%;"></div>
+                </div>
+                <div class="justify-content-md-center altair_card perc_delay_card_small">
+                  <div id="plot_PercDelayByDate_FourWeeks_smallScreen" style="width: 90%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#AvgDeptDelayByTimeOfDayCollapseFourWeeks" aria-expanded="true" aria-controls="AvgDeptDelayByTimeOfDayCollapseFourWeeks">
+                <span class="fa fa-angle-down"></span> Average Delay by Time of Day
+              </h4>
+              <div class="collapse show" id="AvgDeptDelayByTimeOfDayCollapseFourWeeks">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Average departure delay by time of day, across all tracked routes and stops.
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>Departures are grouped into 30 minute buckets (e.g. 09:00-09:29, 09:30-09:59, etc).</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="card border-0">
+                  <div id="plot_MeanByTimeOfDay_FourWeeks" style="width: 100%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- End of card columns -->
+
+      </div>
+
+      <!-- ---------------------- -->
+      <!-- END OF FOUR WEEKS TAB  -->
+      <!-- ---------------------- -->
+
+      <!-- ---------------------- -->
+      <!--    TWELVE WEEKS TAB    -->
+      <!-- ---------------------- -->
+
+      <div class="tab-pane" id="twelve_weeks" role="tabpanel">
+
+        <div class="card border-danger homepage-cards">
+          <div class="card card-body border-0" style="text-align: center;">
+            <p>Since {{ HighLevelSummary.loc['TwelveWeeks', 'MinDeptDate'] }}, data has been collected on <strong>{{ HighLevelSummary.loc['TwelveWeeks', 'Count'] }} bus departures</strong>, from <strong>{{ HighLevelSummary.loc['TwelveWeeks', 'OriginIdNunique'] }} stops</strong>, across <strong>{{ HighLevelSummary.loc['TwelveWeeks', 'ServiceNameNunique'] }} different routes</strong>.</p>
+
+            <p>Across all these departures, the <strong>average delay </strong>between the planned and actual departure times was <strong>{{ HighLevelSummary.loc['TwelveWeeks', 'MeanDelay'] }} minutes</strong>, while <strong>{{ HighLevelSummary.loc['TwelveWeeks', 'PercLt5Mins'] }}% </strong>of departures had a delay of <strong>5 minutes or less</strong>.</p>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="card-columns">
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#LinesSummaryCollapseTwelveWeeks" aria-expanded="true" aria-controls="LinesSummaryCollapseTwelveWeeks">
+                <span class="fa fa-angle-down"></span> Summary by Route
+              </h4>
+              <div class="collapse show" id="LinesSummaryCollapseTwelveWeeks">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>High-level comparison of different routes (grouped by Metro corridors).
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>"Delay" = difference between actual and scheduled departure times.</li>
+                        <li>Each "Line" contains multiple bus routes (e.g. 2a, 2b, etc).</li>
+                        <li>Cancellations have only been recorded since 12/12/2022, and so aren't shown in this view yet.</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="card-no-padding card-body border-0">
+                  <table id="summaryTableTwelveWeeks" class="table display dataTables_wrapper" pageLength="12">
+                    <thead>
+                      <tr>
+                        <th class="first_col">Line</th>
+                        <th>Route</th>
+                        <th>Average Delay (mins)</th>
+                        <th>Departures within 5 mins of Schedule</th>
+                        <th>Departures Recorded</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for _, row in summary_table.iterrows() %}
+                      <tr>
+                        <td class="first_col" style="background-color: {{ row['colour'] }}"><strong>
+                          <a style="color: white" href='{{ url_for("homepage") }}'>{{ row['Line'] }}</a></strong></td>
+                        <td style="white-space: nowrap;"><a style="color: black" href='{{ url_for("homepage") }}'>{{ row['descriptive_name'] }}</a></td></td>
+
+                        <td style="text-align: center">{{ row['Mean_TwelveWeeks'] }}</td>
+                        <td style="text-align: center">{{ row['Perc_lte5MinDelay_TwelveWeeks'] }} &#37;</td>
+                        <td style="text-align: center">{{ row['Count_TwelveWeeks'] }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#AvgDeptDelayCollapseTwelveWeeks" aria-expanded="true" aria-controls="AvgDeptDelayCollapseTwelveWeeks">
+                <span class="fa fa-angle-down"></span> Average Delay by Date
+              </h4>
+              <div class="collapse show" id="AvgDeptDelayCollapseTwelveWeeks">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Average departure delay per day, across all tracked routes and stops.
+                  <i>
+                    <ul class="summary_bullets">
+                      <li>Points show the average delay for each date; the red line shows a 7-day rolling average (the average delay of all departures on that day and the 6 preceding days).</li>
+                    </ul>
+                  </i>
+                </div>
+
+                <div class="justify-content-md-center altair_card">
+                  <div id="plot_MeanByDate_TwelveWeeks" style="width: 95%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#FoliumMapCollapseTwelveWeeks" aria-expanded="true" aria-controls="FoliumMapCollapseTwelveWeeks">
+                <span class="fa fa-angle-down"></span> Stop-by-Stop Comparison
+              </h4>
+              <div class="collapse show" id="FoliumMapCollapseTwelveWeeks">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Map of bus stops monitored by BusWatchNI.
+                  <i>
+                  <ul class="summary_bullets">
+                    <li>Colour indicates average departure delay from each stop<br>(orange: departures typically on schedule; blue: departures often delayed).</li>
+                    <li>Hover over/tap a stop to show more information about it.</li>
+                    <li>Alternative versions: <a href='/static/foliumMap_AllLines_TwelveWeeks.html'>fullscreen</a>, <a href='/static/foliumMap_AllLines_TwelveWeeks_altColour.html'>red-green colour scale</a>, <a href='/static/foliumMap_AllLines_TwelveWeeks_watercolour.html'>watercolour style</a>.</li>
+                  </ul></i>
+                </p>
+                </div>
+
+                <div class="card border-0">
+                  <iframe src="/static/foliumMap_AllLines_TwelveWeeks.html" title="test" style="width: 100%; border: none" height="450"></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#PercDelayCollapseTwelveWeeks" aria-expanded="true" aria-controls="PercDelayCollapseTwelveWeeks">
+                <span class="fa fa-angle-down"></span> Percentage of "On-Time" Departures
+              </h4>
+              <div class="collapse show" id="PercDelayCollapseTwelveWeeks">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Percentage of departures within 3, 7, or 15 minutes of scheduled departure times, across all tracked routes and stops.
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>Points show the percentage of departures within 3, 7 or 15 minutes of schedule for each date.</li>
+                        <li>Lines show similar percentages but calculated over the previous week (each date plus the 6 preceding days).</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="justify-content-md-center altair_card perc_delay_card_normal">
+                  <div id="plot_PercDelayByDate_TwelveWeeks" style="width: 90%;"></div>
+                </div>
+                <div class="justify-content-md-center altair_card perc_delay_card_small">
+                  <div id="plot_PercDelayByDate_TwelveWeeks_smallScreen" style="width: 90%;"></div>
+                </div>                 
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#AvgDeptDelayByTimeOfDayCollapseTwelveWeeks" aria-expanded="true" aria-controls="AvgDeptDelayByTimeOfDayCollapseTwelveWeeks">
+                <span class="fa fa-angle-down"></span> Average Delay by Time of Day
+              </h4>
+              <div class="collapse show" id="AvgDeptDelayByTimeOfDayCollapseTwelveWeeks">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Average departure delay by time of day, across all tracked routes and stops.
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>Departures are grouped into 30 minute buckets (e.g. 09:00-09:29, 09:30-09:59, etc).</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="card border-0">
+                  <div id="plot_MeanByTimeOfDay_TwelveWeeks" style="width: 100%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- End of card columns -->
+
+      </div>
+
+      <!-- ----------------------- -->
+      <!-- END OF TWELVE WEEKS TAB -->
+      <!-- ----------------------- -->
+
+      <!-- ----------------------- -->
+      <!--       ALL WEEKS TAB     -->
+      <!-- ----------------------- -->
+
+      <div class="tab-pane" id="since_records_began" role="tabpanel">
+
+        <div class="card border-danger homepage-cards">
+          <div class="card card-body border-0" style="text-align: center;">
+            <p>Since {{ HighLevelSummary.loc['SinceRecordsBegan', 'MinDeptDate'] }}, data has been collected on <strong>{{ HighLevelSummary.loc['SinceRecordsBegan', 'Count'] }} bus departures</strong>, from <strong>{{ HighLevelSummary.loc['SinceRecordsBegan', 'OriginIdNunique'] }} stops</strong>, across <strong>{{ HighLevelSummary.loc['SinceRecordsBegan', 'ServiceNameNunique'] }} different routes</strong>.</p>
+
+            <p>Across all these departures, the <strong>average delay </strong>between the planned and actual departure times was <strong>{{ HighLevelSummary.loc['SinceRecordsBegan', 'MeanDelay'] }} minutes</strong>, while <strong>{{ HighLevelSummary.loc['SinceRecordsBegan', 'PercLt5Mins'] }}% </strong>of departures had a delay of <strong>5 minutes or less</strong>.</p>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="card-columns">
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#LinesSummaryCollapseSinceRecordsBegan" aria-expanded="true" aria-controls="LinesSummaryCollapseSinceRecordsBegan">
+                <span class="fa fa-angle-down"></span> Summary by Route
+              </h4>
+              <div class="collapse show" id="LinesSummaryCollapseSinceRecordsBegan">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>High-level comparison of different routes (grouped by Metro corridors).
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>"Delay" = difference between actual and scheduled departure times.</li>
+                        <li>Each "Line" contains multiple bus routes (e.g. 2a, 2b, etc).</li>
+                        <li>Cancellations have only been recorded since 12/12/2022, and so aren't shown in this view.</li>        
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="card-no-padding card-body border-0">
+                  <table id="summaryTableSinceRecordsBegan" class="table display dataTables_wrapper" pageLength="12">
+                    <thead>
+                      <tr>
+                        <th class="first_col">Line</th>
+                        <th>Route</th>
+                        <th>Average Delay (mins)</th>
+                        <th>Departures within 5 mins of Schedule</th>
+                        <th>Departures Recorded</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for _, row in summary_table.iterrows() %}
+                      <tr>
+                        <td class="first_col" style="background-color: {{ row['colour'] }}"><strong>
+                          <a style="color: white" href='{{ url_for("homepage") }}'>{{ row['Line'] }}</a></strong></td>
+                        <td style="white-space: nowrap;"><a style="color: black" href='{{ url_for("homepage") }}'>{{ row['descriptive_name'] }}</a></td></td>
+
+                        <td style="text-align: center">{{ row['Mean_SinceRecordsBegan'] }}</td>
+                        <td style="text-align: center">{{ row['Perc_lte5MinDelay_SinceRecordsBegan'] }} &#37;</td>
+                        <td style="text-align: center">{{ row['Count_SinceRecordsBegan'] }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#AvgDeptDelayCollapseSinceRecordsBegan" aria-expanded="true" aria-controls="AvgDeptDelayCollapseSinceRecordsBegan">
+                <span class="fa fa-angle-down"></span> Average Delay by Date
+              </h4>
+              <div class="collapse show" id="AvgDeptDelayCollapseSinceRecordsBegan">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Average departure delay per day, across all tracked routes and stops.
+                  <i>
+                    <ul class="summary_bullets">
+                      <li>Points show the average delay for each date; the red line shows a 7-day rolling average (the average delay of all departures on that day and the 6 preceding days).</li>
+                    </ul>
+                  </i>
+                </div>
+
+                <div class="justify-content-md-center altair_card">
+                  <div id="plot_MeanByDate_SinceRecordsBegan" style="width: 95%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#FoliumMapCollapseSinceRecordsBegan" aria-expanded="true" aria-controls="FoliumMapCollapseSinceRecordsBegan">
+                <span class="fa fa-angle-down"></span> Stop-by-Stop Comparison
+              </h4>
+              <div class="collapse show" id="FoliumMapCollapseSinceRecordsBegan">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Map of bus stops monitored by BusWatchNI.
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>Colour indicates average departure delay from each stop<br>(orange: departures typically on schedule; blue: departures often delayed).</li>
+                        <li>Hover over/tap a stop to show more information about it.</li>
+                        <!-- <li>Alternative versions: <a href='/plot_Folium_SinceRecordsBegan'>fullscreen</a>, <a href='/plot_Folium_SinceRecordsBegan_AltColour'>red-green scale</a>, <a href='/plot_Folium_SinceRecordsBegan_Watercolour'>"watercolour"</a>.</li> -->
+                        <li>Alternative versions: <a href='/static/foliumMap_AllLines_SinceRecordsBegan.html'>fullscreen</a>, <a href='/static/foliumMap_AllLines_SinceRecordsBegan_altColour.html'>red-green colour scale</a>, <a href='/static/foliumMap_AllLines_SinceRecordsBegan_watercolour.html'>watercolour style</a>.</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="card border-0">
+                  <!-- <iframe class="**plot_Folium_SinceRecordsBegan**", src="/plot_Folium_SinceRecordsBegan" style="width: 100%; border: none" height="450"></iframe> -->
+                  <iframe src="/static/foliumMap_AllLines_SinceRecordsBegan.html" title="test" style="width: 100%; border: none" height="450"></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#PercDelayCollapseSinceRecordsBegan" aria-expanded="true" aria-controls="PercDelayCollapseSinceRecordsBegan">
+                <span class="fa fa-angle-down"></span> Percentage of "On-Time" Departures
+              </h4>
+              <div class="collapse show" id="PercDelayCollapseSinceRecordsBegan">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Percentage of departures within 3, 7, or 15 minutes of scheduled departure times, across all tracked routes and stops.
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>Points show the percentage of departures within 7 minutes of schedule for each date.</li>
+                        <li>Lines show similar percentages but calculated over the previous week (each date plus the 6 preceding days).</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="justify-content-md-center altair_card perc_delay_card_normal">
+                  <div id="plot_PercDelayByDate_SinceRecordsBegan" style="width: 90%;"></div>
+                </div>
+                <div class="justify-content-md-center altair_card perc_delay_card_small">
+                  <div id="plot_PercDelayByDate_SinceRecordsBegan_smallScreen" style="width: 90%;"></div>
+                </div>          
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-dark homepage-cards">
+            <div class="card-header border-0 justify-content-md-center" style="background-color: #ffffff;">
+              <h4 style="text-align: center;" data-toggle="collapse" href="#AvgDeptDelayByTimeOfDayCollapseSinceRecordsBegan" aria-expanded="true" aria-controls="AvgDeptDelayByTimeOfDayCollapseSinceRecordsBegan">
+                <span class="fa fa-angle-down"></span> Average Delay by Time of Day
+              </h4>
+              <div class="collapse show" id="AvgDeptDelayByTimeOfDayCollapseSinceRecordsBegan">
+                <div class="card-no-side-padding card-body border-0">
+                  <p><strong>Summary: </strong>Average departure delay by time of day, across all tracked routes and stops.
+                    <i>
+                      <ul class="summary_bullets">
+                        <li>Departures are grouped into 30 minute buckets (e.g. 09:00-09:29, 09:30-09:59, etc).</li>
+                      </ul>
+                    </i>
+                  </p>
+                </div>
+
+                <div class="card border-0 perc_delay_card">
+                  <div id="plot_MeanByTimeOfDay_SinceRecordsBegan" style="width: 100%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- End of card columns -->
+
+      </div>
+
+      <!-- ---------------------- -->
+      <!--  END OF ALL WEEKS TAB  -->
+      <!-- ---------------------- -->
+
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+
+
+
+
+
+
+{% block jscontent %}
+<script type="text/javascript">
+  parse("/plots/plot_MeanByTimeOfDay_FourWeeks", "plot_MeanByTimeOfDay_FourWeeks");
+  parse("/plots/plot_MeanByDate_FourWeeks", "plot_MeanByDate_FourWeeks");
+  parse("/plots/plot_PercDelayByDate_FourWeeks", "plot_PercDelayByDate_FourWeeks");
+  parse("/plots/plot_PercDelayByDate_FourWeeks_smallScreen", "plot_PercDelayByDate_FourWeeks_smallScreen");
+</script>
+
+<script>
+  var summary_table_one_week = $('#summaryTableOneWeek').DataTable({
+    "columnDefs": [
+            {"type": "html-num", "targets": [0]},
+            {"targets": [1], "orderable": false}],
+    "order": [[0, "asc"]],
+    "paging": false,
+    "searching": false,
+    "bInfo" : false
+  });
+</script>
+
+<script>
+  var summary_table_two_weeks = $('#summaryTableTwoWeeks').DataTable({
+    "columnDefs": [
+            {"type": "html-num", "targets": [0]},
+            {"targets": [1], "orderable": false}],
+    "order": [[0, "asc"]],
+    "paging": false,
+    "searching": false,
+    "bInfo" : false
+  });
+</script>
+
+<script>
+  var summary_table_four_weeks = $('#summaryTableFourWeeks').DataTable({
+    "columnDefs": [
+            {"type": "html-num", "targets": [0]},
+            {"targets": [1], "orderable": false}],
+    "order": [[0, "asc"]],
+    "paging": false,
+    "searching": false,
+    "bInfo" : false
+  });
+</script>
+
+<script>
+  var summary_table_twelve_weeks = $('#summaryTableTwelveWeeks').DataTable({
+    "columnDefs": [
+            {"type": "html-num", "targets": [0]},
+            {"targets": [1], "orderable": false}],
+    "order": [[0, "asc"]],
+    "paging": false,
+    "searching": false,
+    "bInfo" : false
+  });
+</script>
+
+<script>
+  var summary_table_since_records_began = $('#summaryTableSinceRecordsBegan').DataTable({
+    "columnDefs": [
+      {"type": "html-num", "targets": [0]},
+      {"targets": [1], "orderable": false}],
+    "order": [[0, "asc"]],
+    "paging": false,
+    "searching": false,
+    "bInfo" : false
+  });
+</script>
+
+
+<!-- Fix for issue where tables on the non-default tabs were displaying at only half-width.
+     This code seems to fix the issue - the "responsive" attribute in the tables doesn't seem essential.
+     Note that to make it work I had to comment out the var summary_table_one_month; and $(document).ready(function() {
+     bits of the scripts above - hopefully this doesn't cause any issues.
+https://stackoverflow.com/questions/36273251/datatables-improperly-sized-in-bootstrap-tab
+-->
+<script>
+  $('#since_records_began_tab').on('click', function(e) {
+    e.preventDefault();
+
+    // Just parse the altair plots when the tab is clicked; otherwise the 'width=container' functionality
+    // doesn't work properly
+    parse("/plots/plot_MeanByDate_SinceRecordsBegan", "plot_MeanByDate_SinceRecordsBegan");
+    parse("/plots/plot_MeanByTimeOfDay_SinceRecordsBegan", "plot_MeanByTimeOfDay_SinceRecordsBegan");
+    parse("/plots/plot_PercDelayByDate_SinceRecordsBegan", "plot_PercDelayByDate_SinceRecordsBegan");
+    parse("/plots/plot_PercDelayByDate_SinceRecordsBegan_smallScreen", "plot_PercDelayByDate_SinceRecordsBegan_smallScreen");
+
+    $(this).tab('show');
+
+    summary_table_since_records_began.columns.adjust().draw();
+    // Fix for bug where clicking tab would increase table width by a few pixels
+    const summaryTableSinceRecordsBegan = document.getElementById('summaryTableSinceRecordsBegan');
+    summaryTableSinceRecordsBegan.style.setProperty('width', 'auto');
+  });
+</script>
+
+<script>
+  $('#twelve_weeks_tab').on('click', function(e) {
+    e.preventDefault();
+
+    // Just parse the altair plots when the tab is clicked; otherwise the 'width=container' functionality
+    // doesn't work properly
+    parse("/plots/plot_MeanByDate_TwelveWeeks", "plot_MeanByDate_TwelveWeeks");
+    parse("/plots/plot_MeanByTimeOfDay_TwelveWeeks", "plot_MeanByTimeOfDay_TwelveWeeks");
+    parse("/plots/plot_PercDelayByDate_TwelveWeeks", "plot_PercDelayByDate_TwelveWeeks");
+    parse("/plots/plot_PercDelayByDate_TwelveWeeks_smallScreen", "plot_PercDelayByDate_TwelveWeeks_smallScreen");
+
+    $(this).tab('show');
+
+    summary_table_twelve_weeks.columns.adjust().draw();
+    // Fix for bug where clicking tab would increase table width by a few pixels
+    const summaryTableTwelveWeeks = document.getElementById('summaryTableTwelveWeeks');
+    summaryTableTwelveWeeks.style.setProperty('width', 'auto');
+  });
+</script>
+
+<script>
+  $('#four_weeks_tab').on('click', function(e) {
+    e.preventDefault();
+
+    // Just parse the altair plots when the tab is clicked; otherwise the 'width=container' functionality
+    // doesn't work properly
+    // Note: might not need this for the default tab
+    parse("/plots/plot_MeanByDate_FourWeeks", "plot_MeanByDate_FourWeeks");
+    parse("/plots/plot_MeanByTimeOfDay_FourWeeks", "plot_MeanByTimeOfDay_FourWeeks");
+    parse("/plots/plot_PercDelayByDate_FourWeeks", "plot_PercDelayByDate_FourWeeks");
+    parse("/plots/plot_PercDelayByDate_FourWeeks_smallScreen", "plot_PercDelayByDate_FourWeeks_smallScreen");
+
+    $(this).tab('show');
+
+    summary_table_four_weeks.columns.adjust().draw();
+    // Fix for bug where clicking tab would increase table width by a few pixels
+    const summaryTableFourWeeks = document.getElementById('summaryTableFourWeeks');
+    summaryTableFourWeeks.style.setProperty('width', 'auto');
+  });
+</script>
+
+<script>
+  $('#two_weeks_tab').on('click', function(e) {
+    e.preventDefault();
+
+    // Just parse the altair plots when the tab is clicked; otherwise the 'width=container' functionality
+    // doesn't work properly
+    parse("/plots/plot_MeanByDate_TwoWeeks", "plot_MeanByDate_TwoWeeks");
+    parse("/plots/plot_MeanByTimeOfDay_TwoWeeks", "plot_MeanByTimeOfDay_TwoWeeks");
+    parse("/plots/plot_PercDelayByDate_TwoWeeks", "plot_PercDelayByDate_TwoWeeks");
+    parse("/plots/plot_PercDelayByDate_TwoWeeks_smallScreen", "plot_PercDelayByDate_TwoWeeks_smallScreen");
+
+    $(this).tab('show');
+
+    summary_table_two_weeks.columns.adjust().draw();
+    // Fix for bug where clicking tab would increase table width by a few pixels
+    const summaryTableTwoWeeks = document.getElementById('summaryTableTwoWeeks');
+    summaryTableTwoWeeks.style.setProperty('width', 'auto');
+  });
+</script>
+
+<script>
+  $('#one_week_tab').on('click', function(e) {
+    e.preventDefault();
+
+    // Just parse the altair plots when the tab is clicked; otherwise the 'width=container' functionality
+    // doesn't work properly
+    parse("/plots/plot_MeanByDate_OneWeek", "plot_MeanByDate_OneWeek");
+    parse("/plots/plot_MeanByTimeOfDay_OneWeek", "plot_MeanByTimeOfDay_OneWeek");
+    parse("/plots/plot_PercDelayByDate_OneWeek", "plot_PercDelayByDate_OneWeek");
+    parse("/plots/plot_PercDelayByDate_OneWeek_smallScreen", "plot_PercDelayByDate_OneWeek_smallScreen");
+
+    $(this).tab('show');
+
+    summary_table_one_week.columns.adjust().draw();
+    // Fix for bug where clicking tab would increase table width by a few pixels
+    const summaryTableOneWeek = document.getElementById('summaryTableOneWeek');
+    summaryTableOneWeek.style.setProperty('width', 'auto');
+  });
+</script>
+
+<!-- This one isn't really needed, but is included here to avoid a slight table resizing the first
+  time you change tab after the page has loaded -->
+<script>
+  $(document).ready(function(e) {
+    summary_table_four_weeks.columns.adjust().draw()
+  })
+</script>
+
+<script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+
+<script>
+  // Code to toggle icon beside header of each card when card is clicked to hide/show summary and notes
+  $('.card-header').click(function() {
+    $(this).find('span').toggleClass('fa-angle-down fa-angle-right')
+  });
+</script>
+
+{% endblock %}
