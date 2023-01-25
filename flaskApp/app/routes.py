@@ -48,11 +48,27 @@ def data():
 
 @app.route('/download/<filename>')
 def download_file(filename):
+    # Basic way to track the number of downloads of each file
+    download_history = pd.read_csv(data_dir + 'DownloadHistory.csv')
+    new_row = pd.DataFrame({'Date': datetime.now().strftime('%Y-%m-%d'),
+                            'Time':datetime.now().strftime('%H:%M'),
+                            'Filename': filename},index=[0])
+    download_history = pd.concat([download_history, new_row]).reset_index(drop=True)
+    download_history.to_csv(data_dir + 'DownloadHistory.csv', index=False)
+
     path = data_dir + filename
     return send_file(path, as_attachment=True)
 
 @app.route('/download_compressed/<month>')
 def download_monthly_data_compressed(month):
+    # Basic way to track the number of downloads of each file
+    download_history = pd.read_csv(data_dir + 'DownloadHistory.csv')
+    new_row = pd.DataFrame({'Date': datetime.now().strftime('%Y-%m-%d'),
+                            'Time':datetime.now().strftime('%H:%M'),
+                            'Filename': 'monthlyData_' + month + '.csv.bz2'},index=[0])
+    download_history = pd.concat([download_history, new_row]).reset_index(drop=True)
+    download_history.to_csv(data_dir + 'DownloadHistory.csv', index=False)
+    
     path = data_dir + 'monthlyData_' + month + '.csv.bz2'
     return send_file(path, as_attachment=True)
 
