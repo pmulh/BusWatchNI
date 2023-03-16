@@ -34,7 +34,7 @@ def about():
 # Get size of each "monthly data" file to show on Data page
 ###########################################################
 MonthlyDownloadFileSizes = {}
-for month in ['2022_08', '2022_09', '2022_10', '2022_11', '2022_12']:
+for month in ['2022_08', '2022_09', '2022_10', '2022_11', '2022_12', '2023_01', '2023_02']:
     MonthlyDownloadFileSizes[month] = {}
     extension = '.csv.bz2'
     MonthlyDownloadFileSizes[month][extension] = int(round(os.path.getsize(data_dir + 'monthlyData_' + month +
@@ -190,7 +190,8 @@ def make_summary_table():
         summary_table[col] = round(summary_table[col], 0).astype(int)
 
     # Round each cancellation % to nearest percentage
-    for col in ['cancellation_percentage_OneWeek', 'cancellation_percentage_TwoWeeks', 'cancellation_percentage_FourWeeks']:
+    for col in ['cancellation_percentage_OneWeek', 'cancellation_percentage_TwoWeeks', 'cancellation_percentage_FourWeeks',
+                'cancellation_percentage_TwelveWeeks']:
         summary_table[col] = round(summary_table[col], 0).astype(int)
 
     summary_table = summary_table[['Line', 'descriptive_name', 'colour',
@@ -198,7 +199,8 @@ def make_summary_table():
                                    'Count_OneWeek', 'Count_TwoWeeks', 'Count_FourWeeks', 'Count_TwelveWeeks', 'Count_SinceRecordsBegan',
                                    'Perc_lte5MinDelay_OneWeek', 'Perc_lte5MinDelay_TwoWeeks', 'Perc_lte5MinDelay_FourWeeks',
                                    'Perc_lte5MinDelay_TwelveWeeks', 'Perc_lte5MinDelay_SinceRecordsBegan',
-                                   'cancellation_percentage_OneWeek', 'cancellation_percentage_TwoWeeks', 'cancellation_percentage_FourWeeks']]
+                                   'cancellation_percentage_OneWeek', 'cancellation_percentage_TwoWeeks', 'cancellation_percentage_FourWeeks',
+                                   'cancellation_percentage_TwelveWeeks']]
 
     return(summary_table)
 
