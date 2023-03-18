@@ -93,7 +93,7 @@ HighLevelSummary = HighLevelSummary.set_index('TimePeriod')
 #########################
 # "Summary by Route" card
 #########################
-def make_summary_table():
+def make_summary_table(line_filter=None):
     #
     MeanBy_Line_OneWeek = pd.read_csv(data_dir + 'MeanBy_Line_OneWeek.csv')
     MeanBy_Line_TwoWeeks = pd.read_csv(data_dir + 'MeanBy_Line_TwoWeeks.csv')
@@ -211,7 +211,13 @@ summary_table = make_summary_table()
 def homepage():
     return(render_template('homepage.html', title='Home',
                            summary_table=summary_table,
-                           HighLevelSummary=HighLevelSummary))
+                           HighLevelSummary=HighLevelSummary[HighLevelSummary.Line=='All']))
+
+# @app.route('/lines/<line>')
+# def line_summary(line):
+#     return(render_template('line_summary.html', title=f'Line {line} Summary',
+#                            summary_table=summary_table,
+#                            HighLevelSummary=HighLevelSummary[HighLevelSummary.Line==line]))
 
 ##################
 # Altair Functions
