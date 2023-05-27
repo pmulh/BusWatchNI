@@ -128,7 +128,7 @@ footer {
         margin-left: auto;
         margin-right: auto;
     }
-    .nav-pills .nav-link {
+    .nav-pills .weeks_nav_homepage {
         display: inline;
         color: #697a8b;
         padding-top:  0.3rem;
@@ -141,9 +141,8 @@ footer {
     }
 }
 
-
 @media (min-width: 424px) and (max-width: 469px) {
-    .nav-pills .nav-link {
+    .nav-pills .weeks_nav_homepage {
         display: inline;
         color: #697a8b;
         padding-left: 0.75rem;
@@ -156,7 +155,7 @@ footer {
 }
 
 @media (min-width: 470px) {
-    .nav-pills .nav-link {
+    .nav-pills .weeks_nav_homepage {
         display: inline;
         color: #697a8b;
         padding-top: 0.7rem;        
@@ -165,6 +164,28 @@ footer {
         border-top-right-radius: 0.75rem;
     }
 }
+
+
+/* On the Lines pages, show the Line beside the Weeks tabs on large screens,
+   and above the Weeks tabs on small screens (with a little extra padding
+   added in this case to avoid the tabs overlapping with the Line name) */
+@media (min-width: 640px) {
+    .weeks_nav_line_mobile {
+        display: none;
+    }
+    .weeks_nav_line_desktop {
+        margin-right: 2px;
+    }
+}
+@media (max-width: 639px) {
+    .weeks_nav_line_desktop {
+        display: none;
+    }
+    .weeks_nav_line_mobile {
+        margin-bottom: 5px;
+    }
+}
+
 
 .nav-link {
     font-weight: bold;

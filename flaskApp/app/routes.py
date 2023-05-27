@@ -34,7 +34,8 @@ def about():
 # Get size of each "monthly data" file to show on Data page
 ###########################################################
 MonthlyDownloadFileSizes = {}
-for month in ['2022_08', '2022_09', '2022_10', '2022_11', '2022_12', '2023_01', '2023_02']:
+for month in ['2022_08', '2022_09', '2022_10', '2022_11', '2022_12',
+              '2023_01', '2023_02', '2023_03', '2023_04']:
     MonthlyDownloadFileSizes[month] = {}
     extension = '.csv.bz2'
     MonthlyDownloadFileSizes[month][extension] = int(round(os.path.getsize(data_dir + 'monthlyData_' + month +
@@ -77,6 +78,7 @@ def download_monthly_data_compressed(month):
 ############################################################################
 ################################# Homepage #################################
 ############################################################################
+lines_list = ['1','2','3','4','5','6','7','8','9','10','11','12','G']
 
 #############################################################################################
 # Data for Summary box at top of homepage ("Since XX/XX/XXXX, data has been collected on...")
@@ -94,60 +96,91 @@ HighLevelSummary = HighLevelSummary.set_index('TimePeriod')
 # "Summary by Route" card
 #########################
 def make_summary_table(line_filter=None):
-    #
-    MeanBy_Line_OneWeek = pd.read_csv(data_dir + 'MeanBy_Line_OneWeek.csv')
-    MeanBy_Line_TwoWeeks = pd.read_csv(data_dir + 'MeanBy_Line_TwoWeeks.csv')
-    MeanBy_Line_FourWeeks = pd.read_csv(data_dir + 'MeanBy_Line_FourWeeks.csv')
-    MeanBy_Line_TwelveWeeks = pd.read_csv(data_dir + 'MeanBy_Line_TwelveWeeks.csv')
-    MeanBy_Line_SinceRecordsBegan = pd.read_csv(data_dir + 'MeanBy_Line_SinceRecordsBegan.csv')
-    #
-    PercDelaysBy_Line_OneWeek = pd.read_csv(data_dir + 'PercDelaysBy_Line_OneWeek.csv')
-    PercDelaysBy_Line_TwoWeeks = pd.read_csv(data_dir + 'PercDelaysBy_Line_TwoWeeks.csv')
-    PercDelaysBy_Line_FourWeeks = pd.read_csv(data_dir + 'PercDelaysBy_Line_FourWeeks.csv')
-    PercDelaysBy_Line_TwelveWeeks = pd.read_csv(data_dir + 'PercDelaysBy_Line_TwelveWeeks.csv')
-    PercDelaysBy_Line_SinceRecordsBegan = pd.read_csv(data_dir + 'PercDelaysBy_Line_SinceRecordsBegan.csv')
-    #
-    CancellationCountBy_Line_OneWeek = pd.read_csv(data_dir + 'CancellationCountBy_Line_OneWeek.csv')
-    CancellationCountBy_Line_TwoWeeks = pd.read_csv(data_dir + 'CancellationCountBy_Line_TwoWeeks.csv')
-    CancellationCountBy_Line_FourWeeks = pd.read_csv(data_dir + 'CancellationCountBy_Line_FourWeeks.csv')
-    CancellationCountBy_Line_TwelveWeeks = pd.read_csv(data_dir + 'CancellationCountBy_Line_TwelveWeeks.csv')
-    CancellationCountBy_Line_SinceRecordsBegan = pd.read_csv(data_dir + 'CancellationCountBy_Line_SinceRecordsBegan.csv')
+    if line_filter:
+        grouping_col = 'Service'
+        if line_filter == '1':
+            services = ['1a', '1c', '1d', '1e', '1f', '1g', '1j']
+        elif line_filter == '2':
+            services = ['2a', '2b', '2c', '2d', '2e', '2g', '2h', '2j', '2k', '2m']
+        elif line_filter == '3':
+            services = ['3a', '3b', '3c', '3d', '3e', '3f', '3g', '3h', '3j']
+        elif line_filter == '4':
+            services = ['4c', '4d', '4e']
+        elif line_filter == '5':
+            services = ['5a', '5b', '5c']
+        elif line_filter == '6':
+            services = ['6a', '6c', '6d', '6e']
+        elif line_filter == '7':
+            services = ['7a', '7b', '7c', '7d', '7e', '7g', '7h']
+        elif line_filter == '8':
+            services = ['8a', '8b', '8c', '8d']
+        elif line_filter == '9':
+            services = ['9a', '9b', '9c', '9e', '9f', '9g', '9h', '9j', '9k']
+        elif line_filter == '10':
+            services = ['10a', '10b', '10f', '10g', '10h', '10j', '10k', '10m', '10p', '10x']
+        elif line_filter == '11':
+            services = ['11a', '11b', '11c', '11d', '11e', '11f', '11g']
+        elif line_filter == '12':
+            services = ['12a', '12b', '12c']
+        elif line_filter == 'G':
+            services = ['G1', 'G2']
+    else:
+        grouping_col = 'Line'
 
-    Mean_OneWeek = (MeanBy_Line_OneWeek[['Line', 'mean', 'count']]
+    #
+    MeanBy_Group_OneWeek = pd.read_csv(data_dir + 'MeanBy_' + grouping_col + '_OneWeek.csv')
+    MeanBy_Group_TwoWeeks = pd.read_csv(data_dir + 'MeanBy_' + grouping_col + '_TwoWeeks.csv')
+    MeanBy_Group_FourWeeks = pd.read_csv(data_dir + 'MeanBy_' + grouping_col + '_FourWeeks.csv')
+    MeanBy_Group_TwelveWeeks = pd.read_csv(data_dir + 'MeanBy_' + grouping_col + '_TwelveWeeks.csv')
+    MeanBy_Group_SinceRecordsBegan = pd.read_csv(data_dir + 'MeanBy_' + grouping_col + '_SinceRecordsBegan.csv')
+    #
+    PercDelaysBy_Group_OneWeek = pd.read_csv(data_dir + 'PercDelaysBy_' + grouping_col + '_OneWeek.csv')
+    PercDelaysBy_Group_TwoWeeks = pd.read_csv(data_dir + 'PercDelaysBy_' + grouping_col + '_TwoWeeks.csv')
+    PercDelaysBy_Group_FourWeeks = pd.read_csv(data_dir + 'PercDelaysBy_' + grouping_col + '_FourWeeks.csv')
+    PercDelaysBy_Group_TwelveWeeks = pd.read_csv(data_dir + 'PercDelaysBy_' + grouping_col + '_TwelveWeeks.csv')
+    PercDelaysBy_Group_SinceRecordsBegan = pd.read_csv(data_dir + 'PercDelaysBy_' + grouping_col + '_SinceRecordsBegan.csv')
+    #
+    CancellationCountBy_Group_OneWeek = pd.read_csv(data_dir + 'CancellationCountBy_' + grouping_col + '_OneWeek.csv')
+    CancellationCountBy_Group_TwoWeeks = pd.read_csv(data_dir + 'CancellationCountBy_' + grouping_col + '_TwoWeeks.csv')
+    CancellationCountBy_Group_FourWeeks = pd.read_csv(data_dir + 'CancellationCountBy_' + grouping_col + '_FourWeeks.csv')
+    CancellationCountBy_Group_TwelveWeeks = pd.read_csv(data_dir + 'CancellationCountBy_' + grouping_col + '_TwelveWeeks.csv')
+    CancellationCountBy_Group_SinceRecordsBegan = pd.read_csv(data_dir + 'CancellationCountBy_' + grouping_col + '_SinceRecordsBegan.csv')
+
+    Mean_OneWeek = (MeanBy_Group_OneWeek[[grouping_col, 'mean', 'count']]
                     .rename(columns={'mean': 'Mean_OneWeek', 'count': 'Count_OneWeek_NoCancellations'}))
-    Mean_TwoWeeks = (MeanBy_Line_TwoWeeks[['Line', 'mean', 'count']]
+    Mean_TwoWeeks = (MeanBy_Group_TwoWeeks[[grouping_col, 'mean', 'count']]
                      .rename(columns={'mean': 'Mean_TwoWeeks', 'count': 'Count_TwoWeeks_NoCancellations'}))
-    Mean_FourWeeks = (MeanBy_Line_FourWeeks[['Line', 'mean', 'count']]
+    Mean_FourWeeks = (MeanBy_Group_FourWeeks[[grouping_col, 'mean', 'count']]
                       .rename(columns={'mean': 'Mean_FourWeeks', 'count': 'Count_FourWeeks_NoCancellations'}))
-    Mean_TwelveWeeks = (MeanBy_Line_TwelveWeeks[['Line', 'mean', 'count']]
+    Mean_TwelveWeeks = (MeanBy_Group_TwelveWeeks[[grouping_col, 'mean', 'count']]
                       .rename(columns={'mean': 'Mean_TwelveWeeks', 'count': 'Count_TwelveWeeks_NoCancellations'}))
-    Mean_SinceRecordsBegan = (MeanBy_Line_SinceRecordsBegan[['Line', 'mean', 'count']]
+    Mean_SinceRecordsBegan = (MeanBy_Group_SinceRecordsBegan[[grouping_col, 'mean', 'count']]
                               .rename(columns={'mean': 'Mean_SinceRecordsBegan', 'count': 'Count_SinceRecordsBegan_NoCancellations'}))
 
-    PercDelays_OneWeek = (PercDelaysBy_Line_OneWeek[['Line', 'delay_lte5Mins_perc']]
+    PercDelays_OneWeek = (PercDelaysBy_Group_OneWeek[[grouping_col, 'delay_lte5Mins_perc']]
                           .rename(columns={'delay_lte5Mins_perc': 'Perc_lte5MinDelay_OneWeek'}))
-    PercDelays_TwoWeeks = (PercDelaysBy_Line_TwoWeeks[['Line', 'delay_lte5Mins_perc']]
+    PercDelays_TwoWeeks = (PercDelaysBy_Group_TwoWeeks[[grouping_col, 'delay_lte5Mins_perc']]
                            .rename(columns={'delay_lte5Mins_perc': 'Perc_lte5MinDelay_TwoWeeks'}))
-    PercDelays_FourWeeks = (PercDelaysBy_Line_FourWeeks[['Line', 'delay_lte5Mins_perc']]
+    PercDelays_FourWeeks = (PercDelaysBy_Group_FourWeeks[[grouping_col, 'delay_lte5Mins_perc']]
                             .rename(columns={'delay_lte5Mins_perc': 'Perc_lte5MinDelay_FourWeeks'}))
-    PercDelays_TwelveWeeks = (PercDelaysBy_Line_TwelveWeeks[['Line', 'delay_lte5Mins_perc']]
+    PercDelays_TwelveWeeks = (PercDelaysBy_Group_TwelveWeeks[[grouping_col, 'delay_lte5Mins_perc']]
                             .rename(columns={'delay_lte5Mins_perc': 'Perc_lte5MinDelay_TwelveWeeks'}))
-    PercDelays_SinceRecordsBegan = (PercDelaysBy_Line_SinceRecordsBegan[['Line', 'delay_lte5Mins_perc']]
+    PercDelays_SinceRecordsBegan = (PercDelaysBy_Group_SinceRecordsBegan[[grouping_col, 'delay_lte5Mins_perc']]
                                     .rename(columns={'delay_lte5Mins_perc': 'Perc_lte5MinDelay_SinceRecordsBegan'}))
 
-    Cancellations_OneWeek = (CancellationCountBy_Line_OneWeek[['Line', 'count_True', 'cancellation_percentage']]
+    Cancellations_OneWeek = (CancellationCountBy_Group_OneWeek[[grouping_col, 'count_True', 'cancellation_percentage']]
                              .rename(columns={'count_True': 'cancellation_count_OneWeek',
                                               'cancellation_percentage': 'cancellation_percentage_OneWeek'}))
-    Cancellations_TwoWeeks = (CancellationCountBy_Line_TwoWeeks[['Line', 'count_True', 'cancellation_percentage']]
+    Cancellations_TwoWeeks = (CancellationCountBy_Group_TwoWeeks[[grouping_col, 'count_True', 'cancellation_percentage']]
                               .rename(columns={'count_True': 'cancellation_count_TwoWeeks',
                                                'cancellation_percentage': 'cancellation_percentage_TwoWeeks'}))
-    Cancellations_FourWeeks = (CancellationCountBy_Line_FourWeeks[['Line', 'count_True', 'cancellation_percentage']]
+    Cancellations_FourWeeks = (CancellationCountBy_Group_FourWeeks[[grouping_col, 'count_True', 'cancellation_percentage']]
                                .rename(columns={'count_True': 'cancellation_count_FourWeeks',
                                                 'cancellation_percentage': 'cancellation_percentage_FourWeeks'}))
-    Cancellations_TwelveWeeks = (CancellationCountBy_Line_TwelveWeeks[['Line', 'count_True', 'cancellation_percentage']]
+    Cancellations_TwelveWeeks = (CancellationCountBy_Group_TwelveWeeks[[grouping_col, 'count_True', 'cancellation_percentage']]
                                .rename(columns={'count_True': 'cancellation_count_TwelveWeeks',
                                                 'cancellation_percentage': 'cancellation_percentage_TwelveWeeks'}))
-    Cancellations_SinceRecordsBegan = (CancellationCountBy_Line_SinceRecordsBegan[['Line', 'count_True', 'cancellation_percentage']]
+    Cancellations_SinceRecordsBegan = (CancellationCountBy_Group_SinceRecordsBegan[[grouping_col, 'count_True', 'cancellation_percentage']]
                                        .rename(columns={'count_True': 'cancellation_count_SinceRecordsBegan',
                                                         'cancellation_percentage': 'cancellation_percentage_SinceRecordsBegan'}))
 
@@ -155,7 +188,18 @@ def make_summary_table(line_filter=None):
     for df in [Mean_TwoWeeks, Mean_FourWeeks, Mean_TwelveWeeks, Mean_SinceRecordsBegan,
                PercDelays_OneWeek, PercDelays_TwoWeeks, PercDelays_FourWeeks, PercDelays_TwelveWeeks, PercDelays_SinceRecordsBegan,
                Cancellations_OneWeek, Cancellations_TwoWeeks, Cancellations_FourWeeks, Cancellations_TwelveWeeks, Cancellations_SinceRecordsBegan]:
-        summary_table = pd.merge(summary_table, df, on='Line', how='outer')
+        summary_table = pd.merge(summary_table, df, on=grouping_col, how='outer')
+    if line_filter:
+        summary_table = summary_table[summary_table.Service.isin(services)].copy()
+    # print(summary_table.head(10))
+
+    # There'll be NAs for lines where there were no cancellations in the given time period - fill with 0s
+    for col in ['cancellation_count_OneWeek', 'cancellation_percentage_OneWeek', 'Perc_lte5MinDelay_OneWeek',
+                'cancellation_count_TwoWeeks', 'cancellation_percentage_TwoWeeks', 'Perc_lte5MinDelay_TwoWeeks',
+                'cancellation_count_FourWeeks', 'cancellation_percentage_FourWeeks', 'Perc_lte5MinDelay_FourWeeks',
+                'cancellation_count_TwelveWeeks', 'cancellation_percentage_TwelveWeeks', 'Perc_lte5MinDelay_TwelveWeeks',
+                'cancellation_count_SinceRecordsBegan', 'cancellation_percentage_SinceRecordsBegan', 'Perc_lte5MinDelay_SinceRecordsBegan']:
+        summary_table[col] = summary_table[col].fillna(0)
 
     summary_table['Count_OneWeek'] = summary_table['Count_OneWeek_NoCancellations'] + summary_table['cancellation_count_OneWeek']
     summary_table['Count_TwoWeeks'] = summary_table['Count_TwoWeeks_NoCancellations'] + summary_table['cancellation_count_TwoWeeks']
@@ -163,22 +207,27 @@ def make_summary_table(line_filter=None):
     summary_table['Count_TwelveWeeks'] = summary_table['Count_TwelveWeeks_NoCancellations'] + summary_table['cancellation_count_TwelveWeeks']
     summary_table['Count_SinceRecordsBegan'] = summary_table['Count_SinceRecordsBegan_NoCancellations'] + summary_table['cancellation_count_SinceRecordsBegan']
 
-    # Descriptive names and colours for line groups
-    lineGroup_descriptiveNames = {'1':  ['Antrim Rd', '#f7941e'],
-                                  '2':  ['Shore Rd', '#ed1e24'],
-                                  '3':  ['Holywood Rd', '#00a99d'],
-                                  '4':  ["Upper N'Ards Rd", '#a72c31'],
-                                  '5':  ['Castlereagh Rd', '#53b7e8'],
-                                  '6':  ['Cregagh Rd', '#005826'],
-                                  '7':  ['Ormeau Rd', '#a6ce39'],
-                                  '8':  ['Malone Rd', '#6f2c91'],
-                                  '9':  ['Lisburn Rd', '#ec008c'],
-                                  '10': ['Falls Rd', '#b0acd5'],
-                                  '11': ['Shankill Rd', '#845339'],
-                                  '12': ['Oldpark Rd', '#0072bc'],
-                                  'G':  ['East-West / Titanic', '#000000']}
-    lineGroup_descriptiveNames_df = pd.DataFrame.from_dict(lineGroup_descriptiveNames, orient='index', columns=['descriptive_name', 'colour'])
-    summary_table = pd.merge(summary_table, lineGroup_descriptiveNames_df, left_on='Line', right_index=True)
+    if not line_filter:
+        # Descriptive names and colours for line groups
+        lineGroup_descriptiveNames = {'1':  ['Antrim Rd', '#f7941e'],
+                                      '2':  ['Shore Rd', '#ed1e24'],
+                                      '3':  ['Holywood Rd', '#00a99d'],
+                                      '4':  ["Upper N'Ards Rd", '#a72c31'],
+                                      '5':  ['Castlereagh Rd', '#53b7e8'],
+                                      '6':  ['Cregagh Rd', '#005826'],
+                                      '7':  ['Ormeau Rd', '#a6ce39'],
+                                      '8':  ['Malone Rd', '#6f2c91'],
+                                      '9':  ['Lisburn Rd', '#ec008c'],
+                                      '10': ['Falls Rd', '#b0acd5'],
+                                      '11': ['Shankill Rd', '#845339'],
+                                      '12': ['Oldpark Rd', '#0072bc'],
+                                      'G':  ['East-West / Titanic', '#000000']}
+        lineGroup_descriptiveNames_df = pd.DataFrame.from_dict(lineGroup_descriptiveNames,
+            orient='index', columns=['descriptive_name', 'colour'])
+        summary_table = pd.merge(summary_table, lineGroup_descriptiveNames_df, left_on=grouping_col, right_index=True)
+    else:
+        summary_table['descriptive_name'] = ''
+        summary_table['colour'] = ''
 
     ## Round off the mean delay and % delay values
     for col in ['Mean_OneWeek', 'Mean_TwoWeeks', 'Mean_FourWeeks', 'Mean_TwelveWeeks', 'Mean_SinceRecordsBegan']:
@@ -192,20 +241,30 @@ def make_summary_table(line_filter=None):
     # Round each cancellation % to nearest percentage
     for col in ['cancellation_percentage_OneWeek', 'cancellation_percentage_TwoWeeks', 'cancellation_percentage_FourWeeks',
                 'cancellation_percentage_TwelveWeeks']:
+        # # There'll be NAs for lines where there were no cancellations in the given time period
+        # summary_table[col] = summary_table[col].fillna(0)
         summary_table[col] = round(summary_table[col], 0).astype(int)
 
-    summary_table = summary_table[['Line', 'descriptive_name', 'colour',
+    # Make sure departure counts are integers
+    for col in ['Count_OneWeek', 'Count_TwoWeeks', 'Count_FourWeeks', 'Count_TwelveWeeks', 'Count_SinceRecordsBegan']:
+        summary_table[col] = summary_table[col].astype(int)
+
+    summary_table = summary_table[[grouping_col, 'descriptive_name', 'colour',
                                    'Mean_OneWeek', 'Mean_TwoWeeks', 'Mean_FourWeeks', 'Mean_TwelveWeeks', 'Mean_SinceRecordsBegan',
                                    'Count_OneWeek', 'Count_TwoWeeks', 'Count_FourWeeks', 'Count_TwelveWeeks', 'Count_SinceRecordsBegan',
                                    'Perc_lte5MinDelay_OneWeek', 'Perc_lte5MinDelay_TwoWeeks', 'Perc_lte5MinDelay_FourWeeks',
                                    'Perc_lte5MinDelay_TwelveWeeks', 'Perc_lte5MinDelay_SinceRecordsBegan',
                                    'cancellation_percentage_OneWeek', 'cancellation_percentage_TwoWeeks', 'cancellation_percentage_FourWeeks',
                                    'cancellation_percentage_TwelveWeeks']]
+    # print(summary_table.head(10))
 
     return(summary_table)
 
 
 summary_table = make_summary_table()
+summary_table_lines = {}
+for line in lines_list:
+    summary_table_lines[line] = make_summary_table(line_filter=line)
 
 @app.route('/')
 def homepage():
@@ -213,11 +272,23 @@ def homepage():
                            summary_table=summary_table,
                            HighLevelSummary=HighLevelSummary[HighLevelSummary.Line=='All']))
 
-# @app.route('/lines/<line>')
-# def line_summary(line):
-#     return(render_template('line_summary.html', title=f'Line {line} Summary',
-#                            summary_table=summary_table,
-#                            HighLevelSummary=HighLevelSummary[HighLevelSummary.Line==line]))
+@app.route('/lines/<line>')
+def line_summary(line):
+    if line not in lines_list:
+        ### TODO: Handle this
+        return()
+    if line == 'G':
+        line_description = 'Glider lines'
+    else:
+        line_description = line + ' Metro line'
+    return(render_template('line_summary.html', title=f'Line {line} Summary', line=line,
+                           # line_descriptive_name is like "1 (Antrim Rd)"
+                           line_descriptive_name=summary_table[summary_table.Line==line]['descriptive_name'].values[0],
+                           # line_description is like "1 Metro line"
+                           line_description=line_description,
+                           line_colour=summary_table[summary_table.Line==line]['colour'].values[0],
+                           summary_table=summary_table_lines[line],
+                           HighLevelSummary=HighLevelSummary[HighLevelSummary.Line==line]))
 
 ##################
 # Altair Functions
@@ -226,17 +297,32 @@ def homepage():
 #####################################
 # "Average Delay by Time of Day" card
 #####################################
-def make_MeanByTimeOfDay_plot(date_range):
-    if date_range == 'OneWeek':
-        plot_df = pd.read_csv(data_dir + 'MeanBy_TimeOfDay30MinBuckets_WeekdayOrWeekend_OneWeek.csv')
-    elif date_range == 'TwoWeeks':
-        plot_df = pd.read_csv(data_dir + 'MeanBy_TimeOfDay30MinBuckets_WeekdayOrWeekend_TwoWeeks.csv')
-    elif date_range == 'FourWeeks':
-        plot_df = pd.read_csv(data_dir + 'MeanBy_TimeOfDay30MinBuckets_WeekdayOrWeekend_FourWeeks.csv')
-    elif date_range == 'TwelveWeeks':
-        plot_df = pd.read_csv(data_dir + 'MeanBy_TimeOfDay30MinBuckets_WeekdayOrWeekend_TwelveWeeks.csv')
+def make_MeanByTimeOfDay_plot(date_range, line_filter=None):
+    if line_filter:
+        if date_range == 'OneWeek':
+            plot_df = pd.read_csv(data_dir + 'MeanBy_Line_TimeOfDay30MinBuckets_WeekdayOrWeekend_OneWeek.csv')
+        elif date_range == 'TwoWeeks':
+            plot_df = pd.read_csv(data_dir + 'MeanBy_Line_TimeOfDay30MinBuckets_WeekdayOrWeekend_TwoWeeks.csv')
+        elif date_range == 'FourWeeks':
+            plot_df = pd.read_csv(data_dir + 'MeanBy_Line_TimeOfDay30MinBuckets_WeekdayOrWeekend_FourWeeks.csv')
+        elif date_range == 'TwelveWeeks':
+            plot_df = pd.read_csv(data_dir + 'MeanBy_Line_TimeOfDay30MinBuckets_WeekdayOrWeekend_TwelveWeeks.csv')
+        else:
+            plot_df = pd.read_csv(data_dir + 'MeanBy_Line_TimeOfDay30MinBuckets_WeekdayOrWeekend_SinceRecordsBegan.csv')
+        plot_df = plot_df[plot_df.Line == line_filter]
+        # print(f'{date_range}, {line_filter}, {plot_df.shape}')
     else:
-        plot_df = pd.read_csv(data_dir + 'MeanBy_TimeOfDay30MinBuckets_WeekdayOrWeekend_SinceRecordsBegan.csv')
+        if date_range == 'OneWeek':
+            plot_df = pd.read_csv(data_dir + 'MeanBy_TimeOfDay30MinBuckets_WeekdayOrWeekend_OneWeek.csv')
+        elif date_range == 'TwoWeeks':
+            plot_df = pd.read_csv(data_dir + 'MeanBy_TimeOfDay30MinBuckets_WeekdayOrWeekend_TwoWeeks.csv')
+        elif date_range == 'FourWeeks':
+            plot_df = pd.read_csv(data_dir + 'MeanBy_TimeOfDay30MinBuckets_WeekdayOrWeekend_FourWeeks.csv')
+        elif date_range == 'TwelveWeeks':
+            plot_df = pd.read_csv(data_dir + 'MeanBy_TimeOfDay30MinBuckets_WeekdayOrWeekend_TwelveWeeks.csv')
+        else:
+            plot_df = pd.read_csv(data_dir + 'MeanBy_TimeOfDay30MinBuckets_WeekdayOrWeekend_SinceRecordsBegan.csv')
+        # print(f'{date_range}, {line_filter}, {plot_df.shape}')
 
     plot_df['Time'] = pd.to_datetime(plot_df['PlannedDepartureTime30MinBuckets'], format='%H:%M:%S')
     plot_df = plot_df[(plot_df.Time.dt.time >= time(7,0)) & (plot_df.Time.dt.time <= time(23,0))].copy()
@@ -266,40 +352,90 @@ def make_MeanByTimeOfDay_plot(date_range):
     return chart.to_json()
 
 # Create jsons once on app load
+# All routes
 MeanByTimeOfDay_plot_OneWeek_json = make_MeanByTimeOfDay_plot('OneWeek')
 MeanByTimeOfDay_plot_TwoWeeks_json = make_MeanByTimeOfDay_plot('TwoWeeks')
 MeanByTimeOfDay_plot_FourWeeks_json = make_MeanByTimeOfDay_plot('FourWeeks')
 MeanByTimeOfDay_plot_TwelveWeeks_json = make_MeanByTimeOfDay_plot('TwelveWeeks')
 MeanByTimeOfDay_plot_SinceRecordsBegan_json = make_MeanByTimeOfDay_plot('SinceRecordsBegan')
+# Line by line
+MeanByTimeOfDay_Line_plot_jsons = {}
+for line in lines_list:
+    MeanByTimeOfDay_Line_plot_jsons[line] = {}
+    MeanByTimeOfDay_Line_plot_jsons[line]['OneWeek'] = make_MeanByTimeOfDay_plot('OneWeek', line)
+    MeanByTimeOfDay_Line_plot_jsons[line]['TwoWeeks'] = make_MeanByTimeOfDay_plot('TwoWeeks', line)
+    MeanByTimeOfDay_Line_plot_jsons[line]['FourWeeks'] = make_MeanByTimeOfDay_plot('FourWeeks', line)
+    MeanByTimeOfDay_Line_plot_jsons[line]['TwelveWeeks'] = make_MeanByTimeOfDay_plot('TwelveWeeks', line)
+    MeanByTimeOfDay_Line_plot_jsons[line]['SinceRecordsBegan'] = make_MeanByTimeOfDay_plot('SinceRecordsBegan', line)
 
-@app.route('/plots/plot_MeanByTimeOfDay_OneWeek')
-def plot_MeanByTimeOfDay_OneWeek():
-    return(MeanByTimeOfDay_plot_OneWeek_json)
 
-@app.route('/plots/plot_MeanByTimeOfDay_TwoWeeks')
-def plot_MeanByTimeOfDay_TwoWeeks():
-    return(MeanByTimeOfDay_plot_TwoWeeks_json)
+# @app.route('/plots/plot_MeanByTimeOfDay_OneWeek')
+# def plot_MeanByTimeOfDay_OneWeek():
+#     return(MeanByTimeOfDay_plot_OneWeek_json)
 
-@app.route('/plots/plot_MeanByTimeOfDay_FourWeeks')
-def plot_MeanByTimeOfDay_FourWeeks():
-    return(MeanByTimeOfDay_plot_FourWeeks_json)
+# @app.route('/plots/plot_MeanByTimeOfDay_TwoWeeks')
+# def plot_MeanByTimeOfDay_TwoWeeks():
+#     return(MeanByTimeOfDay_plot_TwoWeeks_json)
 
-@app.route('/plots/plot_MeanByTimeOfDay_TwelveWeeks')
-def plot_MeanByTimeOfDay_TwelveWeeks():
-    return(MeanByTimeOfDay_plot_TwelveWeeks_json)
+# @app.route('/plots/plot_MeanByTimeOfDay_FourWeeks')
+# def plot_MeanByTimeOfDay_FourWeeks():
+#     return(MeanByTimeOfDay_plot_FourWeeks_json)
 
-@app.route('/plots/plot_MeanByTimeOfDay_SinceRecordsBegan')
-def plot_MeanByTimeOfDay_SinceRecordsBegan():
-    return(MeanByTimeOfDay_plot_SinceRecordsBegan_json)
+# @app.route('/plots/plot_MeanByTimeOfDay_TwelveWeeks')
+# def plot_MeanByTimeOfDay_TwelveWeeks():
+#     return(MeanByTimeOfDay_plot_TwelveWeeks_json)
+
+# @app.route('/plots/plot_MeanByTimeOfDay_SinceRecordsBegan')
+# def plot_MeanByTimeOfDay_SinceRecordsBegan():
+#     return(MeanByTimeOfDay_plot_SinceRecordsBegan_json)
+
+@app.route('/plots/plot_MeanByTimeOfDay_SinceRecordsBegan/<line>')
+def plot_MeanByTimeOfDay_SinceRecordsBegan(line):
+    if line=='All':
+        return(MeanByTimeOfDay_plot_SinceRecordsBegan_json)
+    else:
+        return(MeanByTimeOfDay_Line_plot_jsons[line]['SinceRecordsBegan'])
+
+@app.route('/plots/plot_MeanByTimeOfDay_TwelveWeeks/<line>')
+def plot_MeanByTimeOfDay_TwelveWeeks(line):
+    if line=='All':
+        return(MeanByTimeOfDay_plot_TwelveWeeks_json)
+    else:
+        return(MeanByTimeOfDay_Line_plot_jsons[line]['TwelveWeeks'])
+
+@app.route('/plots/plot_MeanByTimeOfDay_FourWeeks/<line>')
+def plot_MeanByTimeOfDay_FourWeeks(line):
+    if line=='All':
+        return(MeanByTimeOfDay_plot_FourWeeks_json)
+    else:
+        return(MeanByTimeOfDay_Line_plot_jsons[line]['FourWeeks'])
+
+@app.route('/plots/plot_MeanByTimeOfDay_TwoWeeks/<line>')
+def plot_MeanByTimeOfDay_TwoWeeks(line):
+    if line=='All':
+        return(MeanByTimeOfDay_plot_TwoWeeks_json)
+    else:
+        return(MeanByTimeOfDay_Line_plot_jsons[line]['TwoWeeks'])
+
+@app.route('/plots/plot_MeanByTimeOfDay_OneWeek/<line>')
+def plot_MeanByTimeOfDay_OneWeek(line):
+    if line=='All':
+        return(MeanByTimeOfDay_plot_OneWeek_json)
+    else:
+        return(MeanByTimeOfDay_Line_plot_jsons[line]['OneWeek'])
 
 
 ##############################
 # "Average Delay by Date" card
 ##############################
-def make_MeanByDate_plot(date_range):
-    MeanBy_Date_SinceRecordsBegan = pd.read_csv(data_dir + 'MeanBy_Date_SinceRecordsBegan.csv')
+def make_MeanByDate_plot(date_range, line_filter=None):
+    if line_filter:
+        plot_df = pd.read_csv(data_dir + 'MeanBy_Line_Date_SinceRecordsBegan.csv')
+        plot_df = plot_df[plot_df.Line == line_filter]
+    else:
+        plot_df = pd.read_csv(data_dir + 'MeanBy_Date_SinceRecordsBegan.csv')
+        # plot_df = MeanBy_Date_SinceRecordsBegan.copy()
 
-    plot_df = MeanBy_Date_SinceRecordsBegan.copy()
     plot_df['PlannedDepartureDate'] = pd.to_datetime(plot_df['PlannedDepartureDate'], format='%Y/%m/%d')
 
     if date_range == 'OneWeek':
@@ -346,40 +482,89 @@ MeanByDate_plot_FourWeeks_json = make_MeanByDate_plot('FourWeeks')
 MeanByDate_plot_TwelveWeeks_json = make_MeanByDate_plot('TwelveWeeks')
 MeanByDate_plot_SinceRecordsBegan_json = make_MeanByDate_plot('SinceRecordsBegan')
 
-@app.route('/plots/plot_MeanByDate_OneWeek')
-def plot_MeanByDate_OneWeek():
-    return(MeanByDate_plot_OneWeek_json)
-
-@app.route('/plots/plot_MeanByDate_TwoWeeks')
-def plot_MeanByDate_TwoWeeks():
-    return(MeanByDate_plot_TwoWeeks_json)
-
-@app.route('/plots/plot_MeanByDate_FourWeeks')
-def plot_MeanByDate_FourWeeks():
-    return(MeanByDate_plot_FourWeeks_json)
-
-@app.route('/plots/plot_MeanByDate_TwelveWeeks')
-def plot_MeanByDate_TwelveWeeks():
-    return(MeanByDate_plot_TwelveWeeks_json)
-
-@app.route('/plots/plot_MeanByDate_SinceRecordsBegan')
-def plot_MeanByDate_SinceRecordsBegan():
-    return(MeanByDate_plot_SinceRecordsBegan_json)
+# Line by line
+MeanByDate_Line_plot_jsons = {}
+for line in lines_list:
+    MeanByDate_Line_plot_jsons[line] = {}
+    MeanByDate_Line_plot_jsons[line]['OneWeek'] = make_MeanByDate_plot('OneWeek', line)
+    MeanByDate_Line_plot_jsons[line]['TwoWeeks'] = make_MeanByDate_plot('TwoWeeks', line)
+    MeanByDate_Line_plot_jsons[line]['FourWeeks'] = make_MeanByDate_plot('FourWeeks', line)
+    MeanByDate_Line_plot_jsons[line]['TwelveWeeks'] = make_MeanByDate_plot('TwelveWeeks', line)
+    MeanByDate_Line_plot_jsons[line]['SinceRecordsBegan'] = make_MeanByDate_plot('SinceRecordsBegan', line)
 
 
+# @app.route('/plots/plot_MeanByDate_OneWeek')
+# def plot_MeanByDate_OneWeek():
+#     return(MeanByDate_plot_OneWeek_json)
+
+# @app.route('/plots/plot_MeanByDate_TwoWeeks')
+# def plot_MeanByDate_TwoWeeks():
+#     return(MeanByDate_plot_TwoWeeks_json)
+
+# @app.route('/plots/plot_MeanByDate_FourWeeks')
+# def plot_MeanByDate_FourWeeks():
+#     return(MeanByDate_plot_FourWeeks_json)
+
+# @app.route('/plots/plot_MeanByDate_TwelveWeeks')
+# def plot_MeanByDate_TwelveWeeks():
+#     return(MeanByDate_plot_TwelveWeeks_json)
+
+# @app.route('/plots/plot_MeanByDate_SinceRecordsBegan')
+# def plot_MeanByDate_SinceRecordsBegan():
+#     return(MeanByDate_plot_SinceRecordsBegan_json)
+
+
+@app.route('/plots/plot_MeanByDate_SinceRecordsBegan/<line>')
+def plot_MeanByDate_SinceRecordsBegan(line):
+    if line=='All':
+        return(MeanByDate_plot_SinceRecordsBegan_json)
+    else:
+        return(MeanByDate_Line_plot_jsons[line]['SinceRecordsBegan'])
+
+@app.route('/plots/plot_MeanByDate_TwelveWeeks/<line>')
+def plot_MeanByDate_TwelveWeeks(line):
+    if line=='All':
+        return(MeanByDate_plot_TwelveWeeks_json)
+    else:
+        return(MeanByDate_Line_plot_jsons[line]['TwelveWeeks'])
+
+@app.route('/plots/plot_MeanByDate_FourWeeks/<line>')
+def plot_MeanByDate_FourWeeks(line):
+    if line=='All':
+        return(MeanByDate_plot_FourWeeks_json)
+    else:
+        return(MeanByDate_Line_plot_jsons[line]['FourWeeks'])
+
+@app.route('/plots/plot_MeanByDate_TwoWeeks/<line>')
+def plot_MeanByDate_TwoWeeks(line):
+    if line=='All':
+        return(MeanByDate_plot_TwoWeeks_json)
+    else:
+        return(MeanByDate_Line_plot_jsons[line]['TwoWeeks'])
+
+@app.route('/plots/plot_MeanByDate_OneWeek/<line>')
+def plot_MeanByDate_OneWeek(line):
+    if line=='All':
+        return(MeanByDate_plot_OneWeek_json)
+    else:
+        return(MeanByDate_Line_plot_jsons[line]['OneWeek'])
 
 ###########################################
 # "Percentage of "On-Time" Departures" card
 ###########################################
-def make_PercDelayByDate_plot(date_range, multirow_legend=False, show_all_points=True):
-    PercDelaysBy_Date_SinceRecordsBegan = pd.read_csv(data_dir + 'PercDelaysBy_Date_SinceRecordsBegan.csv')
-
+def make_PercDelayByDate_plot(date_range, line_filter=None, multirow_legend=False, show_all_points=True):
+    if line_filter:
+        PercDelaysBy_Date_SinceRecordsBegan = pd.read_csv(data_dir + 'PercDelaysBy_Line_Date_SinceRecordsBegan.csv')
+        PercDelaysBy_Date_SinceRecordsBegan = PercDelaysBy_Date_SinceRecordsBegan[PercDelaysBy_Date_SinceRecordsBegan.Line == line_filter].copy()
+    else:
+        PercDelaysBy_Date_SinceRecordsBegan = pd.read_csv(data_dir + 'PercDelaysBy_Date_SinceRecordsBegan.csv')
 
     y_min = min(PercDelaysBy_Date_SinceRecordsBegan.delay_lte3Mins_perc.min(),
                 PercDelaysBy_Date_SinceRecordsBegan.delay_lte7Mins_perc.min(),
                 PercDelaysBy_Date_SinceRecordsBegan.delay_lte15Mins_perc.min())
 
     full_df = PercDelaysBy_Date_SinceRecordsBegan.copy()
+
     plot_df = (full_df[['PlannedDepartureDate', 'delay_lte2Mins_perc','rolling_perc_lte2Mins']]
                .rename(columns={'delay_lte2Mins_perc': 'delay_lteXMins_perc','rolling_perc_lte2Mins': 'rolling_perc_lteXMins'}))
     plot_df['Delay'] = '2 mins'
@@ -492,46 +677,138 @@ PercDelayByDate_plot_FourWeeks_json_smallScreen = make_PercDelayByDate_plot('Fou
 PercDelayByDate_plot_TwelveWeeks_json_smallScreen = make_PercDelayByDate_plot('TwelveWeeks', multirow_legend=True)
 PercDelayByDate_plot_SinceRecordsBegan_json_smallScreen = make_PercDelayByDate_plot('SinceRecordsBegan', multirow_legend=True, show_all_points=False)
 
-@app.route('/plots/plot_PercDelayByDate_OneWeek')
-def plot_PercDelayByDate_OneWeek():
-    return(PercDelayByDate_plot_OneWeek_json)
+# Line by line
+PercDelaysByDate_Line_plot_jsons = {}
+PercDelaysByDate_Line_plot_jsons_smallScreen = {}
+for line in lines_list:
+    PercDelaysByDate_Line_plot_jsons[line] = {}
+    PercDelaysByDate_Line_plot_jsons_smallScreen[line] = {}
 
-@app.route('/plots/plot_PercDelayByDate_TwoWeeks')
-def plot_PercDelayByDate_TwoWeeks():
-    return(PercDelayByDate_plot_TwoWeeks_json)
+    PercDelaysByDate_Line_plot_jsons[line]['OneWeek'] = make_PercDelayByDate_plot('OneWeek', line)
+    PercDelaysByDate_Line_plot_jsons[line]['TwoWeeks'] = make_PercDelayByDate_plot('TwoWeeks', line)
+    PercDelaysByDate_Line_plot_jsons[line]['FourWeeks'] = make_PercDelayByDate_plot('FourWeeks', line)
+    PercDelaysByDate_Line_plot_jsons[line]['TwelveWeeks'] = make_PercDelayByDate_plot('TwelveWeeks', line)
+    PercDelaysByDate_Line_plot_jsons[line]['SinceRecordsBegan'] = make_PercDelayByDate_plot('SinceRecordsBegan',line, show_all_points=False)
+    # Separate jsons for small screens, where the legend is split into multiple rows (one column)
+    PercDelaysByDate_Line_plot_jsons_smallScreen[line]['OneWeek'] = make_PercDelayByDate_plot('OneWeek', line)
+    PercDelaysByDate_Line_plot_jsons_smallScreen[line]['TwoWeeks'] = make_PercDelayByDate_plot('TwoWeeks', line)
+    PercDelaysByDate_Line_plot_jsons_smallScreen[line]['FourWeeks'] = make_PercDelayByDate_plot('FourWeeks', line)
+    PercDelaysByDate_Line_plot_jsons_smallScreen[line]['TwelveWeeks'] = make_PercDelayByDate_plot('TwelveWeeks', line)
+    PercDelaysByDate_Line_plot_jsons_smallScreen[line]['SinceRecordsBegan'] = make_PercDelayByDate_plot('SinceRecordsBegan',line, multirow_legend=True, show_all_points=False)
 
-@app.route('/plots/plot_PercDelayByDate_FourWeeks')
-def plot_PercDelayByDate_FourWeeks():
-    return(PercDelayByDate_plot_FourWeeks_json)
 
-@app.route('/plots/plot_PercDelayByDate_TwelveWeeks')
-def plot_PercDelayByDate_TwelveWeeks():
-    return(PercDelayByDate_plot_TwelveWeeks_json)
+# @app.route('/plots/plot_PercDelayByDate_OneWeek')
+# def plot_PercDelayByDate_OneWeek():
+#     return(PercDelayByDate_plot_OneWeek_json)
 
-@app.route('/plots/plot_PercDelayByDate_SinceRecordsBegan')
-def plot_PercDelayByDate_SinceRecordsBegan():
-    return(PercDelayByDate_plot_SinceRecordsBegan_json)
+# @app.route('/plots/plot_PercDelayByDate_TwoWeeks')
+# def plot_PercDelayByDate_TwoWeeks():
+#     return(PercDelayByDate_plot_TwoWeeks_json)
 
-@app.route('/plots/plot_PercDelayByDate_OneWeek_smallScreen')
-def plot_PercDelayByDate_OneWeek_smallScreen():
-    return(PercDelayByDate_plot_OneWeek_json_smallScreen)
+# @app.route('/plots/plot_PercDelayByDate_FourWeeks')
+# def plot_PercDelayByDate_FourWeeks():
+#     return(PercDelayByDate_plot_FourWeeks_json)
 
-@app.route('/plots/plot_PercDelayByDate_TwoWeeks_smallScreen')
-def plot_PercDelayByDate_TwoWeeks_smallScreen():
-    return(PercDelayByDate_plot_TwoWeeks_json_smallScreen)
+# @app.route('/plots/plot_PercDelayByDate_TwelveWeeks')
+# def plot_PercDelayByDate_TwelveWeeks():
+#     return(PercDelayByDate_plot_TwelveWeeks_json)
 
-@app.route('/plots/plot_PercDelayByDate_FourWeeks_smallScreen')
-def plot_PercDelayByDate_FourWeeks_smallScreen():
-    return(PercDelayByDate_plot_FourWeeks_json_smallScreen)
+# @app.route('/plots/plot_PercDelayByDate_SinceRecordsBegan')
+# def plot_PercDelayByDate_SinceRecordsBegan():
+#     return(PercDelayByDate_plot_SinceRecordsBegan_json)
 
-@app.route('/plots/plot_PercDelayByDate_TwelveWeeks_smallScreen')
-def plot_PercDelayByDate_TwelveWeeks_smallScreen():
-    return(PercDelayByDate_plot_TwelveWeeks_json_smallScreen)
+# @app.route('/plots/plot_PercDelayByDate_OneWeek_smallScreen')
+# def plot_PercDelayByDate_OneWeek_smallScreen():
+#     return(PercDelayByDate_plot_OneWeek_json_smallScreen)
 
-@app.route('/plots/plot_PercDelayByDate_SinceRecordsBegan_smallScreen')
-def plot_PercDelayByDate_SinceRecordsBegan_smallScreen():
-    return(PercDelayByDate_plot_SinceRecordsBegan_json_smallScreen)
+# @app.route('/plots/plot_PercDelayByDate_TwoWeeks_smallScreen')
+# def plot_PercDelayByDate_TwoWeeks_smallScreen():
+#     return(PercDelayByDate_plot_TwoWeeks_json_smallScreen)
 
+# @app.route('/plots/plot_PercDelayByDate_FourWeeks_smallScreen')
+# def plot_PercDelayByDate_FourWeeks_smallScreen():
+#     return(PercDelayByDate_plot_FourWeeks_json_smallScreen)
+
+# @app.route('/plots/plot_PercDelayByDate_TwelveWeeks_smallScreen')
+# def plot_PercDelayByDate_TwelveWeeks_smallScreen():
+#     return(PercDelayByDate_plot_TwelveWeeks_json_smallScreen)
+
+# @app.route('/plots/plot_PercDelayByDate_SinceRecordsBegan_smallScreen')
+# def plot_PercDelayByDate_SinceRecordsBegan_smallScreen():
+#     return(PercDelayByDate_plot_SinceRecordsBegan_json_smallScreen)
+
+
+
+@app.route('/plots/plot_PercDelayByDate_SinceRecordsBegan/<line>')
+def plot_PercDelayByDate_SinceRecordsBegan(line):
+    if line=='All':
+        return(PercDelayByDate_plot_SinceRecordsBegan_json)
+    else:
+        return(PercDelaysByDate_Line_plot_jsons[line]['SinceRecordsBegan'])
+
+@app.route('/plots/plot_PercDelayByDate_TwelveWeeks/<line>')
+def plot_PercDelayByDate_TwelveWeeks(line):
+    if line=='All':
+        return(PercDelayByDate_plot_TwelveWeeks_json)
+    else:
+        return(PercDelaysByDate_Line_plot_jsons[line]['TwelveWeeks'])
+
+@app.route('/plots/plot_PercDelayByDate_FourWeeks/<line>')
+def plot_PercDelayByDate_FourWeeks(line):
+    if line=='All':
+        return(PercDelayByDate_plot_FourWeeks_json)
+    else:
+        return(PercDelaysByDate_Line_plot_jsons[line]['FourWeeks'])
+
+@app.route('/plots/plot_PercDelayByDate_TwoWeeks/<line>')
+def plot_PercDelayByDate_TwoWeeks(line):
+    if line=='All':
+        return(PercDelayByDate_plot_TwoWeeks_json)
+    else:
+        return(PercDelaysByDate_Line_plot_jsons[line]['TwoWeeks'])
+
+@app.route('/plots/plot_PercDelayByDate_OneWeek/<line>')
+def plot_PercDelayByDate_OneWeek(line):
+    if line=='All':
+        return(PercDelayByDate_plot_OneWeek_json)
+    else:
+        return(PercDelaysByDate_Line_plot_jsons[line]['OneWeek'])
+
+
+@app.route('/plots/plot_PercDelayByDate_SinceRecordsBegan_smallScreen/<line>')
+def plot_PercDelayByDate_SinceRecordsBegan_smallScreen(line):
+    if line=='All':
+        return(PercDelayByDate_plot_SinceRecordsBegan_json_smallScreen)
+    else:
+        return(PercDelaysByDate_Line_plot_jsons_smallScreen[line]['SinceRecordsBegan'])
+
+@app.route('/plots/plot_PercDelayByDate_TwelveWeeks_smallScreen/<line>')
+def plot_PercDelayByDate_TwelveWeeks_smallScreen(line):
+    if line=='All':
+        return(PercDelayByDate_plot_TwelveWeeks_json_smallScreen)
+    else:
+        return(PercDelaysByDate_Line_plot_jsons_smallScreen[line]['TwelveWeeks'])
+
+@app.route('/plots/plot_PercDelayByDate_FourWeeks_smallScreen/<line>')
+def plot_PercDelayByDate_FourWeeks_smallScreen(line):
+    if line=='All':
+        return(PercDelayByDate_plot_FourWeeks_json_smallScreen)
+    else:
+        return(PercDelaysByDate_Line_plot_jsons_smallScreen[line]['FourWeeks'])
+
+@app.route('/plots/plot_PercDelayByDate_TwoWeeks_smallScreen/<line>')
+def plot_PercDelayByDate_TwoWeeks_smallScreen(line):
+    if line=='All':
+        return(PercDelayByDate_plot_TwoWeeks_json_smallScreen)
+    else:
+        return(PercDelaysByDate_Line_plot_jsons_smallScreen[line]['TwoWeeks'])
+
+@app.route('/plots/plot_PercDelayByDate_OneWeek_smallScreen/<line>')
+def plot_PercDelayByDate_OneWeek_smallScreen(line):
+    if line=='All':
+        return(PercDelayByDate_plot_OneWeek_json_smallScreen)
+    else:
+        return(PercDelaysByDate_Line_plot_jsons_smallScreen[line]['OneWeek'])
 
 
 ##################

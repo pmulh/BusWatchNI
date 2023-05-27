@@ -10,47 +10,47 @@ else:
     data_dir = os.environ['HOME'] + '/BusWatchNI/data/'
     static_dir = os.environ['HOME'] + '/BusWatchNI/flaskApp/app/static/'
 
-def plot_Folium_prep():
-    DataForFolium_AllLines_OneWeek = pd.read_csv(data_dir + 'DataForFolium_AllLines_OneWeek.csv')
-    DataForFolium_AllLines_TwoWeeks = pd.read_csv(data_dir + 'DataForFolium_AllLines_TwoWeeks.csv')
-    DataForFolium_AllLines_FourWeeks = pd.read_csv(data_dir + 'DataForFolium_AllLines_FourWeeks.csv')
-    DataForFolium_AllLines_TwelveWeeks = pd.read_csv(data_dir + 'DataForFolium_AllLines_TwelveWeeks.csv')
-    DataForFolium_AllLines_SinceRecordsBegan = pd.read_csv(data_dir + 'DataForFolium_AllLines_SinceRecordsBegan.csv')
+def plot_Folium_prep(line_filter):
+    DataForFolium_OneWeek = pd.read_csv(data_dir + 'DataForFolium_' + line_filter + '_OneWeek.csv')
+    DataForFolium_TwoWeeks = pd.read_csv(data_dir + 'DataForFolium_' + line_filter + '_TwoWeeks.csv')
+    DataForFolium_FourWeeks = pd.read_csv(data_dir + 'DataForFolium_' + line_filter + '_FourWeeks.csv')
+    DataForFolium_TwelveWeeks = pd.read_csv(data_dir + 'DataForFolium_' + line_filter + '_TwelveWeeks.csv')
+    DataForFolium_SinceRecordsBegan = pd.read_csv(data_dir + 'DataForFolium_' + line_filter + '_SinceRecordsBegan.csv')
 
-    _ = make_folium_plots(DataForFolium_AllLines_OneWeek,
-                          filename='foliumMap_AllLines_OneWeek.html')
-    _ = make_folium_plots(DataForFolium_AllLines_OneWeek, altColour=True,
-                          filename='foliumMap_AllLines_OneWeek_altColour.html')
-    _ = make_folium_plots(DataForFolium_AllLines_OneWeek, watercolour=True,
-                          filename='foliumMap_AllLines_OneWeek_watercolour.html')
+    _ = make_folium_plots(DataForFolium_OneWeek,
+                          filename='foliumMap_' + line_filter + '_OneWeek.html')
+    _ = make_folium_plots(DataForFolium_OneWeek, altColour=True,
+                          filename='foliumMap_' + line_filter + '_OneWeek_altColour.html')
+    _ = make_folium_plots(DataForFolium_OneWeek, watercolour=True,
+                          filename='foliumMap_' + line_filter + '_OneWeek_watercolour.html')
 
-    _ = make_folium_plots(DataForFolium_AllLines_TwoWeeks,
-                          filename='foliumMap_AllLines_TwoWeeks.html')
-    _ = make_folium_plots(DataForFolium_AllLines_TwoWeeks, altColour=True,
-                          filename='foliumMap_AllLines_TwoWeeks_altColour.html')
-    _ = make_folium_plots(DataForFolium_AllLines_TwoWeeks, watercolour=True,
-                          filename='foliumMap_AllLines_TwoWeeks_watercolour.html')
+    _ = make_folium_plots(DataForFolium_TwoWeeks,
+                          filename='foliumMap_' + line_filter + '_TwoWeeks.html')
+    _ = make_folium_plots(DataForFolium_TwoWeeks, altColour=True,
+                          filename='foliumMap_' + line_filter + '_TwoWeeks_altColour.html')
+    _ = make_folium_plots(DataForFolium_TwoWeeks, watercolour=True,
+                          filename='foliumMap_' + line_filter + '_TwoWeeks_watercolour.html')
 
-    _ = make_folium_plots(DataForFolium_AllLines_FourWeeks,
-                          filename='foliumMap_AllLines_FourWeeks.html')
-    _ = make_folium_plots(DataForFolium_AllLines_FourWeeks, altColour=True,
-                          filename='foliumMap_AllLines_FourWeeks_altColour.html')
-    _ = make_folium_plots(DataForFolium_AllLines_FourWeeks, watercolour=True,
-                          filename='foliumMap_AllLines_FourWeeks_watercolour.html')
+    _ = make_folium_plots(DataForFolium_FourWeeks,
+                          filename='foliumMap_' + line_filter + '_FourWeeks.html')
+    _ = make_folium_plots(DataForFolium_FourWeeks, altColour=True,
+                          filename='foliumMap_' + line_filter + '_FourWeeks_altColour.html')
+    _ = make_folium_plots(DataForFolium_FourWeeks, watercolour=True,
+                          filename='foliumMap_' + line_filter + '_FourWeeks_watercolour.html')
 
-    _ = make_folium_plots(DataForFolium_AllLines_TwelveWeeks,
-                          filename='foliumMap_AllLines_TwelveWeeks.html')
-    _ = make_folium_plots(DataForFolium_AllLines_TwelveWeeks, altColour=True,
-                          filename='foliumMap_AllLines_TwelveWeeks_altColour.html')
-    _ = make_folium_plots(DataForFolium_AllLines_TwelveWeeks, watercolour=True,
-                          filename='foliumMap_AllLines_TwelveWeeks_watercolour.html')
+    _ = make_folium_plots(DataForFolium_TwelveWeeks,
+                          filename='foliumMap_' + line_filter + '_TwelveWeeks.html')
+    _ = make_folium_plots(DataForFolium_TwelveWeeks, altColour=True,
+                          filename='foliumMap_' + line_filter + '_TwelveWeeks_altColour.html')
+    _ = make_folium_plots(DataForFolium_TwelveWeeks, watercolour=True,
+                          filename='foliumMap_' + line_filter + '_TwelveWeeks_watercolour.html')
 
-    _ = make_folium_plots(DataForFolium_AllLines_SinceRecordsBegan,
-                          filename='foliumMap_AllLines_SinceRecordsBegan.html')
-    _ = make_folium_plots(DataForFolium_AllLines_SinceRecordsBegan, altColour=True,
-                          filename='foliumMap_AllLines_SinceRecordsBegan_altColour.html')
-    _ = make_folium_plots(DataForFolium_AllLines_SinceRecordsBegan, watercolour=True,
-                          filename='foliumMap_AllLines_SinceRecordsBegan_watercolour.html')
+    _ = make_folium_plots(DataForFolium_SinceRecordsBegan,
+                          filename='foliumMap_' + line_filter + '_SinceRecordsBegan.html')
+    _ = make_folium_plots(DataForFolium_SinceRecordsBegan, altColour=True,
+                          filename='foliumMap_' + line_filter + '_SinceRecordsBegan_altColour.html')
+    _ = make_folium_plots(DataForFolium_SinceRecordsBegan, watercolour=True,
+                          filename='foliumMap_' + line_filter + '_SinceRecordsBegan_watercolour.html')
 
     return()
 
@@ -78,4 +78,5 @@ def make_folium_plots(data_for_folium, filename, watercolour=False, altColour=Fa
 
     return()
 
-_ = plot_Folium_prep()
+for line in ['AllLines', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'G']:
+  _ = plot_Folium_prep(line_filter=line)
