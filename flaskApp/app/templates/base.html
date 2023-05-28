@@ -36,20 +36,21 @@ BusWatchNI</a>
                href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Lines
             </a>
-            <div class="dropdown-menu" style="overflow-y: visible; background-color: #343a40; z-index: 10000;" aria-labelledby="navbarDropdown">
-              <a class="nav-link dropdown-item" href="{{ url_for('line_summary', line='1') }}">  1 (Antrim Road)</a>
-              <a class="nav-link dropdown-item" href="{{ url_for('line_summary', line='2') }}">  2 (Shore Road)</a>
-              <a class="nav-link dropdown-item" href="{{ url_for('line_summary', line='3') }}">  3 (Holywood Road)</a>
-              <a class="nav-link dropdown-item" href="{{ url_for('line_summary', line='4') }}">  4 (Upper N'Ards Road)</a>
-              <a class="nav-link dropdown-item" href="{{ url_for('line_summary', line='5') }}">  5 (Castlereagh Road)</a>
-              <a class="nav-link dropdown-item" href="{{ url_for('line_summary', line='6') }}">  6 (Cregagh Road)</a>
-              <a class="nav-link dropdown-item" href="{{ url_for('line_summary', line='7') }}">  7 (Ormeau Road)</a>
-              <a class="nav-link dropdown-item" href="{{ url_for('line_summary', line='8') }}">  8 (Malone Road)</a>
-              <a class="nav-link dropdown-item" href="{{ url_for('line_summary', line='9') }}">  9 (Lisburn Road)</a>
-              <a class="nav-link dropdown-item" href="{{ url_for('line_summary', line='10') }}">  10 (Falls Road)</a>
-              <a class="nav-link dropdown-item" href="{{ url_for('line_summary', line='11') }}">  11 (Shankill Road)</a>
-              <a class="nav-link dropdown-item" href="{{ url_for('line_summary', line='12') }}">  12 (Oldpark Road)</a>
-              <a class="nav-link dropdown-item" href="{{ url_for('line_summary', line='G') }}">  Glider (East-West/Titanic)</a>
+            <div class="bg-dark dropdown-menu" style="min-width: 14rem; overflow-y: visible; z-index: 10000;" aria-labelledby="navbarDropdown">
+            <!-- <div class="dropdown-menu" style="overflow-y: visible; background-color: #343a40; z-index: 10000;" aria-labelledby="navbarDropdown"> -->
+              <a class="nav-link" href="{{ url_for('line_summary', line='1') }}">  1 (Antrim Road)</a>
+              <a class="nav-link" href="{{ url_for('line_summary', line='2') }}">  2 (Shore Road)</a>
+              <a class="nav-link" href="{{ url_for('line_summary', line='3') }}">  3 (Holywood Road)</a>
+              <a class="nav-link" href="{{ url_for('line_summary', line='4') }}">  4 (Upper N'Ards Road)</a>
+              <a class="nav-link" href="{{ url_for('line_summary', line='5') }}">  5 (Castlereagh Road)</a>
+              <a class="nav-link" href="{{ url_for('line_summary', line='6') }}">  6 (Cregagh Road)</a>
+              <a class="nav-link" href="{{ url_for('line_summary', line='7') }}">  7 (Ormeau Road)</a>
+              <a class="nav-link" href="{{ url_for('line_summary', line='8') }}">  8 (Malone Road)</a>
+              <a class="nav-link" href="{{ url_for('line_summary', line='9') }}">  9 (Lisburn Road)</a>
+              <a class="nav-link" href="{{ url_for('line_summary', line='10') }}">  10 (Falls Road)</a>
+              <a class="nav-link" href="{{ url_for('line_summary', line='11') }}">  11 (Shankill Road)</a>
+              <a class="nav-link" href="{{ url_for('line_summary', line='12') }}">  12 (Oldpark Road)</a>
+              <a class="nav-link" href="{{ url_for('line_summary', line='G') }}">  Glider (East-West/Titanic)</a>
               <!-- <div class="dropdown-divider"></div> -->
             </div>
           </li>
