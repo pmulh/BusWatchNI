@@ -35,7 +35,7 @@ def about():
 ###########################################################
 MonthlyDownloadFileSizes = {}
 for month in ['2022_08', '2022_09', '2022_10', '2022_11', '2022_12',
-              '2023_01', '2023_02', '2023_03', '2023_04']:
+              '2023_01', '2023_02', '2023_03', '2023_04', '2023_05']:
     MonthlyDownloadFileSizes[month] = {}
     extension = '.csv.bz2'
     MonthlyDownloadFileSizes[month][extension] = int(round(os.path.getsize(data_dir + 'monthlyData_' + month +
